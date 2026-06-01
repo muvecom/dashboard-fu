@@ -1,449 +1,11 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Desempenho de Disparos & Follow-ups</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        /* ESTILO GERAL (Mantendo a identidade padrão do projeto) */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background-color: #f0f2f5;
-            color: #333;
-            line-height: 1.6;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        /* HEADER */
-        header {
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-            color: white;
-            padding: 25px;
-            border-radius: 12px;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .date-filter {
-            padding: 9px;
-            border-radius: 6px;
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            font-size: 0.9rem;
-            outline: none;
-        }
-
-        .date-filter::-webkit-calendar-picker-indicator {
-            filter: invert(1);
-            cursor: pointer;
-        }
-
-        .header-info h1 {
-            font-size: 1.8rem;
-            margin-bottom: 5px;
-        }
-
-        .header-info p {
-            font-size: 0.9rem;
-            opacity: 0.9;
-        }
-
-        .btn-refresh {
-            background: rgba(255, 255, 255, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: 0.3s;
-            font-weight: 600;
-        }
-
-        .btn-refresh:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
-
-        /* SEÇÃO DE GRÁFICOS */
-        .charts-row {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-            margin-bottom: 25px;
-        }
-
-        .chart-box {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: space-between;
-            min-height: 250px;
-        }
-
-        .chart-header {
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 10px;
-        }
-
-        .chart-header h4 {
-            font-size: 0.85rem;
-            color: #666;
-            text-transform: uppercase;
-        }
-
-        .chart-header .big-num {
-            font-size: 2rem;
-            font-weight: 800;
-            color: #11998e;
-            line-height: 1;
-            cursor: pointer;
-            transition: transform 0.2s ease-in-out;
-        }
-
-        .chart-header .big-num:hover {
-            transform: scale(1.08);
-        }
-
-        .active-filter-num {
-            text-decoration: underline;
-            text-underline-offset: 4px;
-        }
-
-        .chart-canvas-wrapper {
-            width: 100%;
-            height: 180px;
-            display: flex;
-            justify-content: center;
-            position: relative;
-        }
-
-        /* CARDS DE ESTATÍSTICA */
-        .section-title {
-            margin: 20px 0 10px;
-            font-size: 1.1rem;
-            color: #444;
-            font-weight: 700;
-            border-left: 4px solid #11998e;
-            padding-left: 10px;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .stat-card {
-            background: white;
-            padding: 15px 20px;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            border-left: 4px solid transparent;
-            cursor: pointer;
-            transition: all 0.2s ease-in-out;
-        }
-
-        .stat-card:hover {
-            background-color: #fafafa;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        .active-filter-card {
-            background-color: #eef9f6 !important;
-            border-bottom: 4px solid #11998e !important;
-            transform: translateY(-2px);
-        }
-
-        .stat-card h3 {
-            font-size: 0.72rem;
-            color: #666;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 5px;
-        }
-
-        .stat-value {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: #333;
-        }
-
-        /* Cores Temáticas de Borda */
-        .border-gray { border-color: #78909c; }
-        .border-blue { border-color: #1e88e5; }
-        .border-green { border-color: #43a047; }
-        .border-lightgreen { border-color: #7cb342; }
-        .border-yellow { border-color: #fdd835; }
-        .border-red { border-color: #e53935; }
-
-        .text-green { color: #43a047; }
-        .text-red { color: #e53935; }
-        .text-blue { color: #1e88e5; }
-
-        /* TABELA DE DADOS */
-        .table-container {
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            margin-top: 20px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        thead {
-            background-color: #f8f9fa;
-            border-bottom: 2px solid #e9ecef;
-        }
-
-        th {
-            padding: 15px;
-            text-align: left;
-            font-size: 0.75rem;
-            font-weight: 700;
-            color: #495057;
-            text-transform: uppercase;
-        }
-
-        td {
-            padding: 12px 15px;
-            border-bottom: 1px solid #f1f3f5;
-            font-size: 0.85rem;
-            vertical-align: middle;
-        }
-
-        tr:hover {
-            background-color: #f8f9fa;
-        }
-
-        .badge {
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            display: inline-block;
-        }
-
-        .badge-status {
-            background-color: #e3f2fd;
-            color: #1e88e5;
-            border: 1px solid #bbdefb;
-        }
-
-        .badge-success-follow {
-            background-color: #e8f5e9;
-            color: #2e7d32;
-            border: 1px solid #c8e6c9;
-        }
-
-        .badge-fail-follow {
-            background-color: #ffebee;
-            color: #c62828;
-            border: 1px solid #ffcdd2;
-        }
-
-        .btn-action {
-            text-decoration: none;
-            color: white;
-            background-color: #11998e;
-            padding: 6px 12px;
-            border-radius: 4px;
-            font-size: 0.85rem;
-            transition: 0.2s;
-            display: inline-block;
-        }
-
-        .btn-action:hover { opacity: 0.9; }
-
-        .loading-container { text-align: center; padding: 60px; display: none; }
-        .fa-spin { font-size: 3rem; color: #11998e; margin-bottom: 20px; }
-
-        /* MODAL TOKEN */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.6); display: flex; justify-content: center;
-            align-items: center; z-index: 9999; opacity: 0; visibility: hidden; transition: 0.3s;
-        }
-        .modal-overlay.active { opacity: 1; visibility: visible; }
-        .modal { background: white; width: 90%; max-width: 450px; border-radius: 12px; padding: 30px; text-align: center; }
-        .modal input { width: 100%; padding: 12px; margin: 20px 0; border: 1px solid #ddd; border-radius: 6px; }
-        .btn-primary { background: #11998e; color: white; border: none; padding: 12px 25px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: 600; }
-
-        .pagination-container { display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 15px; padding: 10px; }
-        .pagination-btn { padding: 6px 12px; border: 1px solid #ddd; background: white; cursor: pointer; border-radius: 4px; color: #11998e; font-weight: bold; }
-        .pagination-btn:disabled { color: #ccc; cursor: not-allowed; }
-    </style>
-</head>
-
-<body>
-
-    <div class="modal-overlay" id="tokenModal">
-        <div class="modal">
-            <i class="fas fa-paper-plane fa-3x" style="color: #11998e; margin-bottom: 15px;"></i>
-            <h2>Métricas de Follow-up</h2>
-            <input type="password" id="tokenInput" placeholder="Cole seu token de integração aqui...">
-            <button class="btn-primary" onclick="saveTokenAndLoad()">Visualizar Régua</button>
-        </div>
-    </div>
-
-    <div class="container">
-        <header>
-            <div class="header-info">
-                <h1><i class="fas fa-hourglass-half"></i> Efetividade de Follow-up (Régua IA)</h1>
-                <p>Análise de recuperação, conversão por etapa de disparo e retenção.</p>
-            </div>
-            <div class="header-actions">
-                <input type="date" id="startDate" class="date-filter">
-                <input type="date" id="endDate" class="date-filter">
-                <button class="btn-refresh" onclick="loadData()"><i class="fas fa-sync-alt"></i> Atualizar</button>
-            </div>
-        </header>
-
-        <div id="loading" class="loading-container">
-            <i class="fas fa-circle-notch fa-spin"></i>
-            <h3>Analisando histórico de disparos e respostas...</h3>
-        </div>
-
-        <div id="dashboard" style="display: none;">
-
-            <div class="charts-row">
-                <div class="chart-box">
-                    <div class="chart-header">
-                        <div>
-                            <h4>Taxa de Recuperação</h4>
-                            <span style="font-size:0.8rem; color:#999">Responderam vs Ignoraram</span>
-                        </div>
-                        <div class="big-num text-green" id="pizza-reativ-val" onclick="togglePieFilter('Reagiu')">0%</div>
-                    </div>
-                    <div class="chart-canvas-wrapper">
-                        <canvas id="chartEfetividade"></canvas>
-                    </div>
-                </div>
-
-                <div class="chart-box">
-                    <div class="chart-header">
-                        <div>
-                            <h4>Respostas por Gatilho</h4>
-                            <span style="font-size:0.8rem; color:#999">Volumetria por Etapa</span>
-                        </div>
-                        <div class="big-num text-blue" id="pizza-etapa-val">0</div>
-                    </div>
-                    <div class="chart-canvas-wrapper">
-                        <canvas id="chartEtapas"></canvas>
-                    </div>
-                </div>
-
-                <div class="chart-box">
-                    <div class="chart-header">
-                        <div>
-                            <h4>Status Atual, Não Resposta</h4>
-                            <span style="font-size:0.8rem; color:#999">Situação na Régua</span>
-                        </div>
-                        <div class="big-num text-red" id="pizza-status-val">0</div>
-                    </div>
-                    <div class="chart-canvas-wrapper">
-                        <canvas id="chartStatusAtual"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <div class="section-title">Funil Determinístico de Disparos</div>
-            <div class="stats-grid">
-                <div class="stat-card border-gray" onclick="resetFilter()">
-                    <h3>Total Atendidos</h3>
-                    <div class="stat-value" id="count-total">0</div>
-                </div>
-                <div class="stat-card border-blue" onclick="togglePieFilter('Entrou Na Régua')">
-                    <h3>Enviados para Régua (IA)</h3>
-                    <div class="stat-value text-blue" id="count-regua">0</div>
-                </div>
-                <div class="stat-card border-green" onclick="togglePieFilter('Respondeu no 1º')">
-                    <h3>Respondeu no 1º</h3>
-                    <div class="stat-value text-green" id="count-f1">0</div>
-                </div>
-                <div class="stat-card border-lightgreen" onclick="togglePieFilter('Respondeu no 2º')">
-                    <h3>Respondeu no 2º</h3>
-                    <div class="stat-value" style="color: #7cb342;" id="count-f2">0</div>
-                </div>
-                <div class="stat-card border-yellow" onclick="togglePieFilter('Respondeu no 3º')">
-                    <h3>Respondeu até o 3º</h3>
-                    <div class="stat-value" style="color: #fbc02d;" id="count-f3">0</div>
-                </div>
-                <div class="stat-card border-red" onclick="togglePieFilter('Não Respondeu')">
-                    <h3>Não Responderam</h3>
-                    <div class="stat-value text-red" id="count-ignorado">0</div>
-                </div>
-            </div>
-
-            <div class="section-title">Rastreamento de Sessões e Gatilhos</div>
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Última Interação</th>
-                            <th>Cliente / Telefone</th>
-                            <th>Status Régua</th>
-                            <th>Último Log Encontrado</th>
-                            <th style="text-align: center;">Total Msgs</th>
-                            <th>Ação</th>
-                        </tr>
-                    </thead>
-                    <tbody id="table-body"></tbody>
-                </table>
-            </div>
-            <div id="pagination-controls" class="pagination-container"></div>
-        </div>
-    </div>
-
     <script>
         const WEBHOOK_URL = 'https://evo.muvecom.com.br/webhook/de8b08a0-e58e-4f02-b34c-218a682f9924';
-
+        
         let currentToken = null;
-        let globalRawSessions = [];
-        let globalProcessedFollowups = [];
-        let currentFilteredFollowups = [];
-        let chartEfetividade, chartEtapas, chartStatusAtual;
+        let globalRawSessions = []; 
+        let globalProcessedLeads = []; 
+        let currentFilteredLeads = [];
+        let chartStatus, chartResponsabilidade, chartTempo;
         let activePieFilter = null;
         let currentPage = 1;
         const itemsPerPage = 10;
@@ -451,13 +13,18 @@
         document.addEventListener('DOMContentLoaded', () => {
             const today = new Date();
             const oneMonthAgo = new Date();
-            oneMonthAgo.setMonth(today.getMonth() - 1);
+            oneMonthAgo.setDate(today.getDate() - 30);
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const nomeParam = urlParams.get('nome');
+            const tokenParam = urlParams.get('token');
+
+            if (nomeParam) {
+                document.getElementById('dashboard-title').innerHTML = `<i class="fas fa-clock"></i> Monitor Follow-up - ${nomeParam}`;
+            }
 
             document.getElementById('startDate').value = oneMonthAgo.toISOString().split('T')[0];
             document.getElementById('endDate').value = today.toISOString().split('T')[0];
-
-            const urlParams = new URLSearchParams(window.location.search);
-            const tokenParam = urlParams.get('token');
 
             if (tokenParam) {
                 currentToken = tokenParam;
@@ -468,8 +35,8 @@
                 document.getElementById('tokenModal').classList.add('active');
             }
 
-            document.getElementById('startDate').addEventListener('change', () => { if (globalRawSessions.length) processFollowups(); });
-            document.getElementById('endDate').addEventListener('change', () => { if (globalRawSessions.length) processFollowups(); });
+            document.getElementById('startDate').addEventListener('change', () => { if (globalRawSessions.length) processLeads(); });
+            document.getElementById('endDate').addEventListener('change', () => { if (globalRawSessions.length) processLeads(); });
         });
 
         function saveTokenAndLoad() {
@@ -492,125 +59,103 @@
                 });
                 const rawData = await response.json();
                 globalRawSessions = Array.isArray(rawData) ? rawData : (rawData.content || []);
-
-                processFollowups();
+                processLeads();
             } catch (error) {
                 console.error(error);
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('tokenModal').classList.add('active');
-                alert("Erro ao carregar dados do Webhook. Verifique o console.");
+                alert("Erro ao conectar ou token inválido.");
             }
         }
 
-        // PARSER CRONOLÓGICO DOS LOGS E MENSAGENS DO AGENTE DE DISPAROS
-        function processFollowups() {
+        function processLeads() {
             const startDateStr = document.getElementById('startDate').value;
             const endDateStr = document.getElementById('endDate').value;
             const startDate = startDateStr ? new Date(startDateStr + 'T00:00:00') : new Date('2000-01-01');
             const endDate = endDateStr ? new Date(endDateStr + 'T23:59:59') : new Date('2100-01-01');
 
-            globalProcessedFollowups = [];
+            const leadsMap = new Map();
+            const now = new Date();
 
             globalRawSessions.forEach(s => {
                 const sessionDate = new Date(s.createdAt || s.ultInteracao || s.data || Date.now());
                 if (sessionDate < startDate || sessionDate > endDate) return;
 
+                let leadId = s.telefone && s.telefone !== "Sem Telefone" ? s.telefone : s.id;
+                const leadName = s.contactName || s.contato || s.name || "Desconhecido";
+
                 const rawMsgs = s.messages || s.mensagens || [];
-                // Ordena cronologicamente do mais antigo para o mais recente
-                const sortedMsgs = [...rawMsgs].sort((a, b) => new Date(a.createdAt || a.data) - new Date(b.createdAt || b.data));
+                if (rawMsgs.length === 0) return;
 
-                let entrouNaRegua = false;
-                let maxFollowupEnviado = 0;
-                let respondeuNoFollowup = 0; // 0 = Não respondeu, 1, 2 ou 3
-                let ultimoLogEncontrado = "Aguardando";
+                // Captura a última mensagem cronológica real do array
+                const lastMsg = rawMsgs[rawMsgs.length - 1];
+                
+                // Valida o remetente de forma correta sem inverter booleano
+                const isBotOrMe = lastMsg.fromBot === true || lastMsg.fromMe === true || lastMsg.isBot === true || lastMsg.sender === 'bot' || lastMsg.sender === 'agent';
+                const lastSender = isBotOrMe ? 'EMPRESA' : 'CLIENTE';
 
-                // Varredura lógica sequencial do comportamento da sessão
-                sortedMsgs.forEach(m => {
-                    const texto = (m.texto || "").toUpperCase();
-                    const deBot = s.messages ? m.fromBot === true : !m.fromBot;
+                const idleTimeMs = now - sessionDate;
+                const idleHours = Math.floor(idleTimeMs / (1000 * 60 * 60));
 
-                    if (deBot) {
-                        // Verifica se o bot enviou uma mensagem estruturada de follow-up
-                        if (texto.includes("FOLLOW-UP 1") || texto.includes("1/3")) {
-                            entrouNaRegua = true;
-                            maxFollowupEnviado = 1;
-                            ultimoLogEncontrado = "Follow-up 1 Enviado";
-                        } else if (texto.includes("FOLLOW-UP 2") || texto.includes("2/3")) {
-                            entrouNaRegua = true;
-                            maxFollowupEnviado = 2;
-                            ultimoLogEncontrado = "Follow-up 2 Enviado";
-                        } else if (texto.includes("FOLLOW-UP 3") || texto.includes("3/3")) {
-                            entrouNaRegua = true;
-                            maxFollowupEnviado = 3;
-                            ultimoLogEncontrado = "Follow-up 3 Enviado";
-                        }
-                    } else {
-                        // Se o cliente mandou mensagem e a régua já tinha sido acionada
-                        if (entrouNaRegua && maxFollowupEnviado > 0 && respondeuNoFollowup === 0) {
-                            respondeuNoFollowup = maxFollowupEnviado;
-                            ultimoLogEncontrado = `Respondeu no ${respondeuNoFollowup}º Follow-up`;
-                        }
+                let statusFollow = 'AGUARDANDO_CLIENTE'; // No prazo
+                if (lastSender === 'CLIENTE') {
+                    statusFollow = 'AGUARDANDO_VENDEDOR'; // Urgente: bola com a empresa
+                } else if (lastSender === 'EMPRESA' && idleHours >= 24) {
+                    statusFollow = 'FOLLOW_UP_PENDENTE'; // Passou de 24h sem resposta do cliente: cobrar
+                }
+
+                if (leadsMap.has(leadId)) {
+                    const existing = leadsMap.get(leadId);
+                    if (sessionDate > existing.lastDate) {
+                        existing.lastDate = sessionDate;
+                        existing.lastSender = lastSender;
+                        existing.status = statusFollow;
+                        existing.idleHours = idleHours;
+                        existing.sessionId = s.id;
                     }
-                });
-
-                // Se o status explícito for cancelado/encerrado na sessão
-                if (s.status === "FINISHED" && respondeuNoFollowup === 0 && entrouNaRegua) {
-                    ultimoLogEncontrado = "Encerrado Sem Resposta";
-                } else if (entrouNaRegua && respondeuNoFollowup === 0) {
-                    ultimoLogEncontrado = maxFollowupEnviado === 3 ? "Fim da Régua (Ignorado)" : `Em Aguardo (Aguardando F${maxFollowupEnviado + 1})`;
+                    existing.msgTotal += rawMsgs.length;
+                } else {
+                    leadsMap.set(leadId, {
+                        phoneId: leadId,
+                        name: leadName,
+                        lastDate: sessionDate,
+                        lastSender: lastSender,
+                        status: statusFollow,
+                        idleHours: idleHours,
+                        msgTotal: rawMsgs.length,
+                        sessionId: s.id
+                    });
                 }
-
-                // Mapeamento de Categoria para filtros do Dashboard
-                let categoriaFiltro = "Apenas Atendido";
-                if (entrouNaRegua) {
-                    if (respondeuNoFollowup === 1) categoriaFiltro = "Respondeu no 1º";
-                    else if (respondeuNoFollowup === 2) categoriaFiltro = "Respondeu no 2º";
-                    else if (respondeuNoFollowup === 3) categoriaFiltro = "Respondeu no 3º";
-                    else categoriaFiltro = "Não Respondeu";
-                }
-
-                globalProcessedFollowups.push({
-                    id: s.id,
-                    name: s.contactName || s.contato || s.name || "Cliente Desconhecido",
-                    phone: s.telefone ? s.telefone.split('@')[0] : "Sem Número",
-                    lastDate: sessionDate,
-                    entrouNaRegua: entrouNaRegua,
-                    respondeuNoFollowup: respondeuNoFollowup,
-                    ultimoLog: ultimoLogEncontrado,
-                    msgTotal: rawMsgs.length,
-                    categoria: categoriaFiltro,
-                    statusOriginal: s.status
-                });
             });
 
-            calculateStats();
+            globalProcessedLeads = Array.from(leadsMap.values()).sort((a, b) => b.lastDate - a.lastDate);
+
+            const stats = {
+                totalLeads: globalProcessedLeads.length,
+                vendedor: globalProcessedLeads.filter(l => l.status === 'AGUARDANDO_VENDEDOR').length,
+                followAtrasado: globalProcessedLeads.filter(l => l.status === 'FOLLOW_UP_PENDENTE').length,
+                cliente: globalProcessedLeads.filter(l => l.status === 'AGUARDANDO_CLIENTE').length,
+                hoje: globalProcessedLeads.filter(l => l.idleHours < 24).length,
+                criticos: globalProcessedLeads.filter(l => l.idleHours >= 48).length
+            };
+
+            updateDashboard(stats);
         }
 
-        function calculateStats() {
-            const total = globalProcessedFollowups.length;
-            const naRegua = globalProcessedFollowups.filter(f => f.entrouNaRegua).length;
-            const f1 = globalProcessedFollowups.filter(f => f.respondeuNoFollowup === 1).length;
-            const f2 = globalProcessedFollowups.filter(f => f.respondeuNoFollowup === 2).length;
-            const f3 = globalProcessedFollowups.filter(f => f.respondeuNoFollowup === 3).length;
-            const reativosTotal = f1 + f2 + f3;
-            const ignorados = naRegua - reativosTotal;
+        function updateDashboard(stats) {
+            document.getElementById('count-leads').innerText = stats.totalLeads;
+            document.getElementById('count-vendedor').innerText = stats.vendedor;
+            document.getElementById('count-follow-atrasado').innerText = stats.followAtrasado;
+            document.getElementById('count-cliente').innerText = stats.cliente;
+            document.getElementById('count-hoje').innerText = stats.hoje;
+            document.getElementById('count-criticos').innerText = stats.criticos;
 
-            // Atualiza Cards do Topo
-            document.getElementById('count-total').innerText = total;
-            document.getElementById('count-regua').innerText = naRegua;
-            document.getElementById('count-f1').innerText = f1;
-            document.getElementById('count-f2').innerText = f2;
-            document.getElementById('count-f3').innerText = f3;
-            document.getElementById('count-ignorado').innerText = ignorados;
+            document.getElementById('pizza-pendente-val').innerText = stats.vendedor;
+            document.getElementById('pizza-bola-val').innerText = (stats.vendedor + stats.followAtrasado);
+            document.getElementById('pizza-tempo-val').innerText = stats.criticos;
 
-            // Valores de Destaque numérico das Pizzas
-            document.getElementById('pizza-reativ-val').innerText = Math.round((reativosTotal / (naRegua || 1)) * 100) + "%";
-            document.getElementById('pizza-etapa-val').innerText = reativosTotal;
-            document.getElementById('pizza-status-val').innerText = globalProcessedFollowups.filter(f => f.entrouNaRegua && f.respondeuNoFollowup === 0).length;
-
-            initCharts(naRegua, ignorados, reativosTotal, f1, f2, f3);
-            
-            currentFilteredFollowups = globalProcessedFollowups;
+            initCharts(stats);
+            currentFilteredLeads = globalProcessedLeads;
             currentPage = 1;
             renderTable();
 
@@ -618,109 +163,147 @@
             document.getElementById('dashboard').style.display = 'block';
         }
 
-        function initCharts(naRegua, ignorados, reativosTotal, f1, f2, f3) {
+        function initCharts(stats) {
             const commonOptions = {
-                responsive: true, maintainAspectRatio: false,
-                plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } }
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } },
+                onClick: (event, elements, chart) => {
+                    if (elements.length > 0) {
+                        const idx = elements[0].index;
+                        const label = chart.data.labels[idx];
+                        togglePieFilter(label);
+                    }
+                }
             };
 
-            // 1. Gráfico de Efetividade (Reagiu vs Ignorou)
-            if (chartEfetividade) chartEfetividade.destroy();
-            chartEfetividade = new Chart(document.getElementById('chartEfetividade'), {
+            if (chartStatus) chartStatus.destroy();
+            chartStatus = new Chart(document.getElementById('chartStatus'), {
                 type: 'doughnut',
                 data: {
-                    labels: ['Reagiram ao Bot', 'Ignoraram Total'],
-                    datasets: [{ data: [reativosTotal, ignorados], backgroundColor: ['#43a047', '#e53935'], borderWidth: 0 }]
+                    labels: ['Aguardando Vendedor', 'Follow-up Pendente', 'Aguardando Cliente'],
+                    datasets: [{
+                        data: [stats.vendedor, stats.followAtrasado, stats.cliente],
+                        backgroundColor: ['#d32f2f', '#f57c00', '#1e3c72'],
+                        borderWidth: 0
+                    }]
                 },
                 options: { ...commonOptions, cutout: '70%' }
             });
 
-            // 2. Distribuição das Respostas por Etapa do Script
-            if (chartEtapas) chartEtapas.destroy();
-            chartEtapas = new Chart(document.getElementById('chartEtapas'), {
+            if (chartResponsabilidade) chartResponsabilidade.destroy();
+            chartResponsabilidade = new Chart(document.getElementById('chartResponsabilidade'), {
                 type: 'pie',
                 data: {
-                    labels: ['No 1º Follow-up', 'No 2º Follow-up', 'Até o 3º Follow-up'],
-                    datasets: [{ data: [f1, f2, f3], backgroundColor: ['#1e88e5', '#7cb342', '#fdd835'] }]
+                    labels: ['Com a Empresa', 'Com o Cliente'],
+                    datasets: [{
+                        data: [stats.vendedor + stats.followAtrasado, stats.cliente],
+                        backgroundColor: ['#7b1fa2', '#cfd8dc']
+                    }]
                 },
                 options: commonOptions
             });
 
-            // 3. Estado dos Cronômetros / Fluxos Ativos
-            if (chartStatusAtual) chartStatusAtual.destroy();
-            const ativos = globalProcessedFollowups.filter(f => f.entrouNaRegua && f.respondeuNoFollowup === 0 && f.statusOriginal !== "FINISHED").length;
-            const encerrados = globalProcessedFollowups.filter(f => f.ultimoLog.includes("Encerrado") || f.ultimoLog.includes("Fim")).length;
+            const tMenor24 = globalProcessedLeads.filter(l => l.idleHours < 24).length;
+            const t24a48 = globalProcessedLeads.filter(l => l.idleHours >= 24 && l.idleHours < 48).length;
+            const tMaior48 = stats.criticos;
 
-            chartStatusAtual = new Chart(document.getElementById('chartStatusAtual'), {
+            if (chartTempo) chartTempo.destroy();
+            chartTempo = new Chart(document.getElementById('chartTempo'), {
                 type: 'pie',
                 data: {
-                    labels: ['Encerrado ou Ativo', 'Cadeia Encerrada'],
-                    datasets: [{ data: [ativos, encerrados], backgroundColor: ['#ffb300', '#78909c'] }]
+                    labels: ['< 24h', '24h - 48h', '> 48h'],
+                    datasets: [{
+                        data: [tMenor24, t24a48, tMaior48],
+                        backgroundColor: ['#2e7d32', '#ffa726', '#c62828']
+                    }]
                 },
                 options: commonOptions
             });
         }
 
+        function togglePieFilter(label) {
+            document.querySelectorAll('.stat-card').forEach(c => c.classList.remove('active-filter-card'));
+            document.querySelectorAll('.big-num').forEach(n => n.classList.remove('active-filter-num'));
+
+            if (activePieFilter === label) {
+                activePieFilter = null;
+                currentFilteredLeads = globalProcessedLeads;
+            } else {
+                activePieFilter = label;
+                currentFilteredLeads = globalProcessedLeads.filter(lead => {
+                    switch (label) {
+                        case 'Aguardando Vendedor': return lead.status === 'AGUARDANDO_VENDEDOR';
+                        case 'Follow-up Pendente': return lead.status === 'FOLLOW_UP_PENDENTE';
+                        case 'Aguardando Cliente': return lead.status === 'AGUARDANDO_CLIENTE';
+                        case 'Com a Empresa': return lead.status === 'AGUARDANDO_VENDEDOR' || lead.status === 'FOLLOW_UP_PENDENTE';
+                        case 'Com o Cliente': return lead.status === 'AGUARDANDO_CLIENTE';
+                        case '< 24h': return lead.idleHours < 24;
+                        case '24h - 48h': return lead.idleHours >= 24 && lead.idleHours < 48;
+                        case '> 48h': return lead.idleHours >= 48;
+                        default: return true;
+                    }
+                });
+            }
+            currentPage = 1;
+            renderTable();
+        }
+
         function renderTable() {
-            const totalPages = Math.ceil(currentFilteredFollowups.length / itemsPerPage) || 1;
+            const data = currentFilteredLeads;
+            const totalPages = Math.ceil(data.length / itemsPerPage) || 1;
+
             if (currentPage < 1) currentPage = 1;
             if (currentPage > totalPages) currentPage = totalPages;
 
             const start = (currentPage - 1) * itemsPerPage;
             const end = start + itemsPerPage;
-            const paginatedData = currentFilteredFollowups.slice(start, end);
+            const paginatedData = data.slice(start, end);
 
             const body = document.getElementById('table-body');
-            body.innerHTML = paginatedData.map(f => {
-                
-                let badgeClass = "badge-status";
-                if (f.respondeuNoFollowup > 0) badgeClass = "badge-success-follow";
-                if (f.categoria === "Não Respondeu") badgeClass = "badge-fail-follow";
+
+            body.innerHTML = paginatedData.map(lead => {
+                let statusBadge = '';
+                if (lead.status === 'AGUARDANDO_VENDEDOR') {
+                    statusBadge = `<span class="badge badge-urgente"><i class="fas fa-exclamation-circle"></i> RESPONDER</span>`;
+                } else if (lead.status === 'FOLLOW_UP_PENDENTE') {
+                    statusBadge = `<span class="badge badge-pendente"><i class="fas fa-hourglass-half"></i> COBRAR LEAD</span>`;
+                } else {
+                    statusBadge = `<span class="badge badge-noprazo"><i class="fas fa-check"></i> EM DIA</span>`;
+                }
+
+                let tempoOciosoStr = '';
+                if (lead.idleHours === 0) {
+                    tempoOciosoStr = 'Agora mesmo';
+                } else if (lead.idleHours < 24) {
+                    tempoOciosoStr = `${lead.idleHours} hora(s)`;
+                } else {
+                    tempoOciosoStr = `${Math.floor(lead.idleHours / 24)} dia(s)`;
+                }
+
+                let phoneDisplay = lead.phoneId.split('@')[0];
 
                 return `
                 <tr>
-                    <td>${f.lastDate.toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}</td>
+                    <td>${lead.lastDate.toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}</td>
                     <td>
-                        <div style="font-weight:bold; color:#333;">${f.name}</div>
-                        <small style="color:#999;">${f.phone}</small>
+                        <div style="font-weight:bold; color:#333;">${lead.name}</div>
+                        <small style="color:#999;">${phoneDisplay}</small>
                     </td>
-                    <td><span class="badge ${badgeClass}">${f.categoria}</span></td>
-                    <td><i class="fas fa-terminal" style="font-size:0.8rem; color:#aaa;"></i> <b>${f.ultimoLog}</b></td>
-                    <td style="text-align: center;">${f.msgTotal}</td>
-                    <td><a href="https://muvecom.wts.chat/chat2/sessions/${f.id}" target="_blank" class="btn-action">Ver Linha do Tempo</a></td>
+                    <td style="text-align:center">${statusBadge}</td>
+                    <td><b>${lead.lastSender}</b></td>
+                    <td><span class="medida-tag">${tempoOciosoStr}</span></td>
+                    <td style="text-align:center">${lead.msgTotal}</td>
+                    <td><a href="https://muvecom.wts.chat/chat2/sessions/${lead.sessionId}" target="_blank" class="btn-action">Ver Chat</a></td>
                 </tr>
-                `;
-            }).join('');
+            `}).join('');
 
-            document.getElementById('pagination-controls').innerHTML = `
+            const paginationControls = document.getElementById('pagination-controls');
+            paginationControls.innerHTML = `
                 <button class="pagination-btn" onclick="changePage(-1)" ${currentPage === 1 ? 'disabled' : ''}>Anterior</button>
-                <span class="pagination-info">Página ${currentPage} de ${totalPages} (Total: ${currentFilteredFollowups.length})</span>
+                <span class="pagination-info">Página ${currentPage} de ${totalPages} (Total: ${data.length})</span>
                 <button class="pagination-btn" onclick="changePage(1)" ${currentPage === totalPages ? 'disabled' : ''}>Próxima</button>
             `;
-        }
-
-        function togglePieFilter(filtro) {
-            document.querySelectorAll('.stat-card').forEach(c => c.classList.remove('active-filter-card'));
-            if (activePieFilter === filtro) {
-                activePieFilter = null;
-                currentFilteredFollowups = globalProcessedFollowups;
-            } else {
-                activePieFilter = filtro;
-                // Aplica realce visual no card clicado
-                event.currentTarget.classList.add('active-filter-card');
-
-                currentFilteredFollowups = globalProcessedFollowups.filter(f => {
-                    if (filtro === 'Entrou Na Régua') return f.entrouNaRegua;
-                    if (filtro === 'Respondeu no 1º') return f.respondeuNoFollowup === 1;
-                    if (filtro === 'Respondeu no 2º') return f.respondeuNoFollowup === 2;
-                    if (filtro === 'Respondeu no 3º') return f.respondeuNoFollowup === 3;
-                    if (filtro === 'Não Respondeu') return f.entrouNaRegua && f.respondeuNoFollowup === 0;
-                    if (filtro === 'Reagiu') return f.respondeuNoFollowup > 0;
-                    return true;
-                });
-            }
-            currentPage = 1;
-            renderTable();
         }
 
         function changePage(delta) {
@@ -731,11 +314,9 @@
         function resetFilter() {
             activePieFilter = null;
             document.querySelectorAll('.stat-card').forEach(c => c.classList.remove('active-filter-card'));
-            currentFilteredFollowups = globalProcessedFollowups;
+            document.querySelectorAll('.big-num').forEach(n => n.classList.remove('active-filter-num'));
+            currentFilteredLeads = globalProcessedLeads;
             currentPage = 1;
             renderTable();
         }
     </script>
-</body>
-
-</html>
