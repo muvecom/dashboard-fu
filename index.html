@@ -527,7 +527,7 @@
                 // Varredura lógica sequencial do comportamento da sessão
                 sortedMsgs.forEach(m => {
                     const texto = (m.texto || "").toUpperCase();
-                    const deBot = s.messages ? m.fromBot === true : !m.fromBot;
+                    const deBot = s.messages ? m.fromBot === false : !m.fromBot;
 
                     if (deBot) {
                         // Verifica se o bot enviou uma mensagem estruturada de follow-up
