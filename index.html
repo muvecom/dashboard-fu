@@ -4,11 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard de Monitoramento de Follow-ups</title>
+    <title>Desempenho de Disparos & Follow-ups</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* ESTILO GERAL E RESET */
+        /* ESTILO GERAL (Mantendo a identidade padrão do projeto) */
         * {
             margin: 0;
             padding: 0;
@@ -30,7 +30,7 @@
 
         /* HEADER */
         header {
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
             color: white;
             padding: 25px;
             border-radius: 12px;
@@ -127,7 +127,7 @@
         .chart-header .big-num {
             font-size: 2rem;
             font-weight: 800;
-            color: #1e3c72;
+            color: #11998e;
             line-height: 1;
             cursor: pointer;
             transition: transform 0.2s ease-in-out;
@@ -156,7 +156,7 @@
             font-size: 1.1rem;
             color: #444;
             font-weight: 700;
-            border-left: 4px solid #1e3c72;
+            border-left: 4px solid #11998e;
             padding-left: 10px;
         }
 
@@ -187,14 +187,13 @@
         }
 
         .active-filter-card {
-            background-color: #eef2f9 !important;
-            border-bottom: 4px solid #2a5298 !important;
+            background-color: #eef9f6 !important;
+            border-bottom: 4px solid #11998e !important;
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
         }
 
         .stat-card h3 {
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             color: #666;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -207,18 +206,17 @@
             color: #333;
         }
 
-        /* Cores Cards */
-        .border-blue { border-color: #1e3c72; }
-        .border-green { border-color: #2e7d32; }
-        .border-red { border-color: #d32f2f; }
-        .border-orange { border-color: #f57c00; }
-        .border-purple { border-color: #7b1fa2; }
+        /* Cores Temáticas de Borda */
+        .border-gray { border-color: #78909c; }
+        .border-blue { border-color: #1e88e5; }
+        .border-green { border-color: #43a047; }
+        .border-lightgreen { border-color: #7cb342; }
+        .border-yellow { border-color: #fdd835; }
+        .border-red { border-color: #e53935; }
 
-        .text-green { color: #2e7d32; }
-        .text-red { color: #d32f2f; }
-        .text-purple { color: #7b1fa2; }
-        .text-orange { color: #f57c00; }
-        .text-blue { color: #1e3c72; }
+        .text-green { color: #43a047; }
+        .text-red { color: #e53935; }
+        .text-blue { color: #1e88e5; }
 
         /* TABELA DE DADOS */
         .table-container {
@@ -240,7 +238,7 @@
         }
 
         th {
-            padding: 15px 15px;
+            padding: 15px;
             text-align: left;
             font-size: 0.75rem;
             font-weight: 700;
@@ -267,37 +265,28 @@
             display: inline-block;
         }
 
-        .badge-urgente {
+        .badge-status {
+            background-color: #e3f2fd;
+            color: #1e88e5;
+            border: 1px solid #bbdefb;
+        }
+
+        .badge-success-follow {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+
+        .badge-fail-follow {
             background-color: #ffebee;
             color: #c62828;
             border: 1px solid #ffcdd2;
         }
 
-        .badge-pendente {
-            background-color: #fff3e0;
-            color: #e65100;
-            border: 1px solid #ffe0b2;
-        }
-
-        .badge-noprazo {
-            background-color: #e3f2fd;
-            color: #0d47a1;
-            border: 1px solid #bbdefb;
-        }
-
-        .medida-tag {
-            background: #f1f3f4;
-            color: #333;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-family: monospace;
-            font-size: 0.85rem;
-        }
-
         .btn-action {
             text-decoration: none;
             color: white;
-            background-color: #2a5298;
+            background-color: #11998e;
             padding: 6px 12px;
             border-radius: 4px;
             font-size: 0.85rem;
@@ -305,113 +294,25 @@
             display: inline-block;
         }
 
-        .btn-action:hover {
-            opacity: 0.9;
-        }
+        .btn-action:hover { opacity: 0.9; }
 
-        .loading-container {
-            text-align: center;
-            padding: 60px;
-            display: none;
-        }
+        .loading-container { text-align: center; padding: 60px; display: none; }
+        .fa-spin { font-size: 3rem; color: #11998e; margin-bottom: 20px; }
 
-        .fa-spin {
-            font-size: 3rem;
-            color: #2a5298;
-            margin-bottom: 20px;
-        }
-
+        /* MODAL TOKEN */
         .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            opacity: 0;
-            visibility: hidden;
-            transition: 0.3s;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6); display: flex; justify-content: center;
+            align-items: center; z-index: 9999; opacity: 0; visibility: hidden; transition: 0.3s;
         }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+        .modal { background: white; width: 90%; max-width: 450px; border-radius: 12px; padding: 30px; text-align: center; }
+        .modal input { width: 100%; padding: 12px; margin: 20px 0; border: 1px solid #ddd; border-radius: 6px; }
+        .btn-primary { background: #11998e; color: white; border: none; padding: 12px 25px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: 600; }
 
-        .modal-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .modal {
-            background: white;
-            width: 90%;
-            max-width: 450px;
-            border-radius: 12px;
-            padding: 30px;
-            text-align: center;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-        }
-
-        .modal h2 {
-            margin-bottom: 15px;
-            color: #1e3c72;
-        }
-
-        .modal input {
-            width: 100%;
-            padding: 12px;
-            margin: 20px 0;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 1rem;
-        }
-
-        .btn-primary {
-            background: #2a5298;
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 1rem;
-            width: 100%;
-            transition: 0.2s;
-        }
-
-        .pagination-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-            margin-top: 15px;
-            padding: 10px;
-        }
-
-        .pagination-btn {
-            padding: 6px 12px;
-            border: 1px solid #ddd;
-            background: white;
-            cursor: pointer;
-            border-radius: 4px;
-            color: #1e3c72;
-            font-weight: bold;
-            transition: background 0.2s;
-        }
-
-        .pagination-btn:hover:not(:disabled) {
-            background: #f1f3f4;
-        }
-
-        .pagination-btn:disabled {
-            color: #ccc;
-            cursor: not-allowed;
-            border-color: #eee;
-        }
-
-        .pagination-info {
-            font-size: 14px;
-            font-weight: 500;
-        }
+        .pagination-container { display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 15px; padding: 10px; }
+        .pagination-btn { padding: 6px 12px; border: 1px solid #ddd; background: white; cursor: pointer; border-radius: 4px; color: #11998e; font-weight: bold; }
+        .pagination-btn:disabled { color: #ccc; cursor: not-allowed; }
     </style>
 </head>
 
@@ -419,31 +320,29 @@
 
     <div class="modal-overlay" id="tokenModal">
         <div class="modal">
-            <i class="fas fa-shield-alt fa-3x" style="color: #2a5298; margin-bottom: 15px;"></i>
-            <h2>Acesso Restrito</h2>
-            <input type="password" id="tokenInput" placeholder="Cole seu token aqui...">
-            <button class="btn-primary" onclick="saveTokenAndLoad()">Acessar Dashboard</button>
-            <a href="https://muvecom.wts.chat/integration/token" target="_blank"
-                style="display: block; margin-top: 15px; font-size: 0.9rem; color: #2a5298; text-decoration: none;">Esqueceu o token?</a>
+            <i class="fas fa-paper-plane fa-3x" style="color: #11998e; margin-bottom: 15px;"></i>
+            <h2>Métricas de Follow-up</h2>
+            <input type="password" id="tokenInput" placeholder="Cole seu token de integração aqui...">
+            <button class="btn-primary" onclick="saveTokenAndLoad()">Visualizar Régua</button>
         </div>
     </div>
 
     <div class="container">
         <header>
             <div class="header-info">
-                <h1 id="dashboard-title"><i class="fas fa-clock"></i> Monitor de Follow-ups</h1>
-                <p id="dashboard-subtitle">Controle de SLAs, tempo ocioso e pendências de resposta por Lead</p>
+                <h1><i class="fas fa-hourglass-half"></i> Efetividade de Follow-up (Régua IA)</h1>
+                <p>Análise de recuperação, conversão por etapa de disparo e retenção.</p>
             </div>
             <div class="header-actions">
-                <input type="date" id="startDate" class="date-filter" title="Data Início">
-                <input type="date" id="endDate" class="date-filter" title="Data Fim">
+                <input type="date" id="startDate" class="date-filter">
+                <input type="date" id="endDate" class="date-filter">
                 <button class="btn-refresh" onclick="loadData()"><i class="fas fa-sync-alt"></i> Atualizar</button>
             </div>
         </header>
 
         <div id="loading" class="loading-container">
             <i class="fas fa-circle-notch fa-spin"></i>
-            <h3>Analisando interações e calculando ociosidade...</h3>
+            <h3>Analisando histórico de disparos e respostas...</h3>
         </div>
 
         <div id="dashboard" style="display: none;">
@@ -452,82 +351,81 @@
                 <div class="chart-box">
                     <div class="chart-header">
                         <div>
-                            <h4>Status do Follow-up</h4>
-                            <span style="font-size:0.8rem; color:#999">Atraso global da base</span>
+                            <h4>Taxa de Recuperação</h4>
+                            <span style="font-size:0.8rem; color:#999">Responderam vs Ignoraram</span>
                         </div>
-                        <div class="big-num text-red" id="pizza-pendente-val" onclick="togglePieFilter('Aguardando Vendedor')">0</div>
+                        <div class="big-num text-green" id="pizza-reativ-val" onclick="togglePieFilter('Reagiu')">0%</div>
                     </div>
                     <div class="chart-canvas-wrapper">
-                        <canvas id="chartStatus"></canvas>
+                        <canvas id="chartEfetividade"></canvas>
                     </div>
                 </div>
 
                 <div class="chart-box">
                     <div class="chart-header">
                         <div>
-                            <h4>Com quem está a bola?</h4>
-                            <span style="font-size:0.8rem; color:#999">Distribuição de ação</span>
+                            <h4>Respostas por Gatilho</h4>
+                            <span style="font-size:0.8rem; color:#999">Volumetria por Etapa</span>
                         </div>
-                        <div class="big-num text-purple" id="pizza-bola-val" onclick="togglePieFilter('Com a Empresa')">0</div>
+                        <div class="big-num text-blue" id="pizza-etapa-val">0</div>
                     </div>
                     <div class="chart-canvas-wrapper">
-                        <canvas id="chartResponsabilidade"></canvas>
+                        <canvas id="chartEtapas"></canvas>
                     </div>
                 </div>
 
                 <div class="chart-box">
                     <div class="chart-header">
                         <div>
-                            <h4>Tempo de Inatividade</h4>
-                            <span style="font-size:0.8rem; color:#999">Idade do último contato</span>
+                            <h4>Status Atual, Não Resposta</h4>
+                            <span style="font-size:0.8rem; color:#999">Situação na Régua</span>
                         </div>
-                        <div class="big-num text-orange" id="pizza-tempo-val" onclick="togglePieFilter('> 48h')">0</div>
+                        <div class="big-num text-red" id="pizza-status-val">0</div>
                     </div>
                     <div class="chart-canvas-wrapper">
-                        <canvas id="chartTempo"></canvas>
+                        <canvas id="chartStatusAtual"></canvas>
                     </div>
                 </div>
             </div>
 
-            <div class="section-title">Métricas de Resposta (Filtros Rápidos)</div>
+            <div class="section-title">Funil Determinístico de Disparos</div>
             <div class="stats-grid">
-                <div class="stat-card border-blue" onclick="resetFilter()">
-                    <h3>Total Atendimentos</h3>
-                    <div class="stat-value" id="count-leads">0</div>
+                <div class="stat-card border-gray" onclick="resetFilter()">
+                    <h3>Total Atendidos</h3>
+                    <div class="stat-value" id="count-total">0</div>
                 </div>
-                <div class="stat-card border-red" onclick="togglePieFilter('Aguardando Vendedor')">
-                    <h3>Aguardando Vendedor</h3>
-                    <div class="stat-value text-red" id="count-vendedor">0</div>
+                <div class="stat-card border-blue" onclick="togglePieFilter('Entrou Na Régua')">
+                    <h3>Enviados para Régua (IA)</h3>
+                    <div class="stat-value text-blue" id="count-regua">0</div>
                 </div>
-                <div class="stat-card border-orange" onclick="togglePieFilter('Follow-up Pendente')">
-                    <h3>Follow-up Atrasado</h3>
-                    <div class="stat-value text-orange" id="count-follow-atrasado">0</div>
+                <div class="stat-card border-green" onclick="togglePieFilter('Respondeu no 1º')">
+                    <h3>Respondeu no 1º</h3>
+                    <div class="stat-value text-green" id="count-f1">0</div>
                 </div>
-                <div class="stat-card border-green" onclick="togglePieFilter('Aguardando Cliente')">
-                    <h3>Aguardando Cliente</h3>
-                    <div class="stat-value text-green" id="count-cliente">0</div>
+                <div class="stat-card border-lightgreen" onclick="togglePieFilter('Respondeu no 2º')">
+                    <h3>Respondeu no 2º</h3>
+                    <div class="stat-value" style="color: #7cb342;" id="count-f2">0</div>
                 </div>
-                <div class="stat-card border-blue" onclick="togglePieFilter('< 24h')">
-                    <h3>Ativos Hoje (&lt;24h)</h3>
-                    <div class="stat-value text-blue" id="count-hoje">0</div>
+                <div class="stat-card border-yellow" onclick="togglePieFilter('Respondeu no 3º')">
+                    <h3>Respondeu até o 3º</h3>
+                    <div class="stat-value" style="color: #fbc02d;" id="count-f3">0</div>
                 </div>
-                <div class="stat-card border-purple" onclick="togglePieFilter('> 48h')">
-                    <h3>Críticos (&gt;48h)</h3>
-                    <div class="stat-value text-purple" id="count-criticos">0</div>
+                <div class="stat-card border-red" onclick="togglePieFilter('Não Respondeu')">
+                    <h3>Não Responderam</h3>
+                    <div class="stat-value text-red" id="count-ignorado">0</div>
                 </div>
             </div>
 
-            <div class="section-title">Detalhamento Fila de Acompanhamento</div>
+            <div class="section-title">Rastreamento de Sessões e Gatilhos</div>
             <div class="table-container">
                 <table>
                     <thead>
                         <tr>
                             <th>Última Interação</th>
-                            <th>Lead (Telefone)</th>
-                            <th style="text-align:center">Status Fila</th>
-                            <th>Último Remetente</th>
-                            <th>Tempo Sem Resposta</th>
-                            <th>Total Msgs</th>
+                            <th>Cliente / Telefone</th>
+                            <th>Status Régua</th>
+                            <th>Último Log Encontrado</th>
+                            <th style="text-align: center;">Total Msgs</th>
                             <th>Ação</th>
                         </tr>
                     </thead>
@@ -540,12 +438,12 @@
 
     <script>
         const WEBHOOK_URL = 'https://evo.muvecom.com.br/webhook/de8b08a0-e58e-4f02-b34c-218a682f9924';
-        
+
         let currentToken = null;
-        let globalRawSessions = []; 
-        let globalProcessedLeads = []; 
-        let currentFilteredLeads = [];
-        let chartStatus, chartResponsabilidade, chartTempo;
+        let globalRawSessions = [];
+        let globalProcessedFollowups = [];
+        let currentFilteredFollowups = [];
+        let chartEfetividade, chartEtapas, chartStatusAtual;
         let activePieFilter = null;
         let currentPage = 1;
         const itemsPerPage = 10;
@@ -553,18 +451,13 @@
         document.addEventListener('DOMContentLoaded', () => {
             const today = new Date();
             const oneMonthAgo = new Date();
-            oneMonthAgo.setDate(today.getDate() - 30);
-
-            const urlParams = new URLSearchParams(window.location.search);
-            const nomeParam = urlParams.get('nome');
-            const tokenParam = urlParams.get('token');
-
-            if (nomeParam) {
-                document.getElementById('dashboard-title').innerHTML = `<i class="fas fa-clock"></i> Monitor Follow-up - ${nomeParam}`;
-            }
+            oneMonthAgo.setMonth(today.getMonth() - 1);
 
             document.getElementById('startDate').value = oneMonthAgo.toISOString().split('T')[0];
             document.getElementById('endDate').value = today.toISOString().split('T')[0];
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const tokenParam = urlParams.get('token');
 
             if (tokenParam) {
                 currentToken = tokenParam;
@@ -575,8 +468,8 @@
                 document.getElementById('tokenModal').classList.add('active');
             }
 
-            document.getElementById('startDate').addEventListener('change', () => { if (globalRawSessions.length) processLeads(); });
-            document.getElementById('endDate').addEventListener('change', () => { if (globalRawSessions.length) processLeads(); });
+            document.getElementById('startDate').addEventListener('change', () => { if (globalRawSessions.length) processFollowups(); });
+            document.getElementById('endDate').addEventListener('change', () => { if (globalRawSessions.length) processFollowups(); });
         });
 
         function saveTokenAndLoad() {
@@ -599,103 +492,125 @@
                 });
                 const rawData = await response.json();
                 globalRawSessions = Array.isArray(rawData) ? rawData : (rawData.content || []);
-                processLeads();
+
+                processFollowups();
             } catch (error) {
                 console.error(error);
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('tokenModal').classList.add('active');
-                alert("Erro ao conectar ou token inválido.");
+                alert("Erro ao carregar dados do Webhook. Verifique o console.");
             }
         }
 
-        function processLeads() {
+        // PARSER CRONOLÓGICO DOS LOGS E MENSAGENS DO AGENTE DE DISPAROS
+        function processFollowups() {
             const startDateStr = document.getElementById('startDate').value;
             const endDateStr = document.getElementById('endDate').value;
             const startDate = startDateStr ? new Date(startDateStr + 'T00:00:00') : new Date('2000-01-01');
             const endDate = endDateStr ? new Date(endDateStr + 'T23:59:59') : new Date('2100-01-01');
 
-            const leadsMap = new Map();
-            const now = new Date();
+            globalProcessedFollowups = [];
 
             globalRawSessions.forEach(s => {
                 const sessionDate = new Date(s.createdAt || s.ultInteracao || s.data || Date.now());
                 if (sessionDate < startDate || sessionDate > endDate) return;
 
-                let leadId = s.telefone && s.telefone !== "Sem Telefone" ? s.telefone : s.id;
-                const leadName = s.contactName || s.contato || s.name || "Desconhecido";
-
                 const rawMsgs = s.messages || s.mensagens || [];
-                if (rawMsgs.length === 0) return;
+                // Ordena cronologicamente do mais antigo para o mais recente
+                const sortedMsgs = [...rawMsgs].sort((a, b) => new Date(a.createdAt || a.data) - new Date(b.createdAt || b.data));
 
-                // Captura a última mensagem cronológica real do array
-                const lastMsg = rawMsgs[rawMsgs.length - 1];
-                
-                // Valida o remetente de forma correta sem inverter booleano
-                const isBotOrMe = lastMsg.fromBot === true || lastMsg.fromMe === true || lastMsg.isBot === true || lastMsg.sender === 'bot' || lastMsg.sender === 'agent';
-                const lastSender = isBotOrMe ? 'EMPRESA' : 'CLIENTE';
+                let entrouNaRegua = false;
+                let maxFollowupEnviado = 0;
+                let respondeuNoFollowup = 0; // 0 = Não respondeu, 1, 2 ou 3
+                let ultimoLogEncontrado = "Aguardando";
 
-                const idleTimeMs = now - sessionDate;
-                const idleHours = Math.floor(idleTimeMs / (1000 * 60 * 60));
+                // Varredura lógica sequencial do comportamento da sessão
+                sortedMsgs.forEach(m => {
+                    const texto = (m.texto || "").toUpperCase();
+                    const deBot = s.messages ? m.fromBot === true : !m.fromBot;
 
-                let statusFollow = 'AGUARDANDO_CLIENTE'; // No prazo
-                if (lastSender === 'CLIENTE') {
-                    statusFollow = 'AGUARDANDO_VENDEDOR'; // Urgente: bola com a empresa
-                } else if (lastSender === 'EMPRESA' && idleHours >= 24) {
-                    statusFollow = 'FOLLOW_UP_PENDENTE'; // Passou de 24h sem resposta do cliente: cobrar
-                }
-
-                if (leadsMap.has(leadId)) {
-                    const existing = leadsMap.get(leadId);
-                    if (sessionDate > existing.lastDate) {
-                        existing.lastDate = sessionDate;
-                        existing.lastSender = lastSender;
-                        existing.status = statusFollow;
-                        existing.idleHours = idleHours;
-                        existing.sessionId = s.id;
+                    if (deBot) {
+                        // Verifica se o bot enviou uma mensagem estruturada de follow-up
+                        if (texto.includes("FOLLOW-UP 1") || texto.includes("1/3")) {
+                            entrouNaRegua = true;
+                            maxFollowupEnviado = 1;
+                            ultimoLogEncontrado = "Follow-up 1 Enviado";
+                        } else if (texto.includes("FOLLOW-UP 2") || texto.includes("2/3")) {
+                            entrouNaRegua = true;
+                            maxFollowupEnviado = 2;
+                            ultimoLogEncontrado = "Follow-up 2 Enviado";
+                        } else if (texto.includes("FOLLOW-UP 3") || texto.includes("3/3")) {
+                            entrouNaRegua = true;
+                            maxFollowupEnviado = 3;
+                            ultimoLogEncontrado = "Follow-up 3 Enviado";
+                        }
+                    } else {
+                        // Se o cliente mandou mensagem e a régua já tinha sido acionada
+                        if (entrouNaRegua && maxFollowupEnviado > 0 && respondeuNoFollowup === 0) {
+                            respondeuNoFollowup = maxFollowupEnviado;
+                            ultimoLogEncontrado = `Respondeu no ${respondeuNoFollowup}º Follow-up`;
+                        }
                     }
-                    existing.msgTotal += rawMsgs.length;
-                } else {
-                    leadsMap.set(leadId, {
-                        phoneId: leadId,
-                        name: leadName,
-                        lastDate: sessionDate,
-                        lastSender: lastSender,
-                        status: statusFollow,
-                        idleHours: idleHours,
-                        msgTotal: rawMsgs.length,
-                        sessionId: s.id
-                    });
+                });
+
+                // Se o status explícito for cancelado/encerrado na sessão
+                if (s.status === "FINISHED" && respondeuNoFollowup === 0 && entrouNaRegua) {
+                    ultimoLogEncontrado = "Encerrado Sem Resposta";
+                } else if (entrouNaRegua && respondeuNoFollowup === 0) {
+                    ultimoLogEncontrado = maxFollowupEnviado === 3 ? "Fim da Régua (Ignorado)" : `Em Aguardo (Aguardando F${maxFollowupEnviado + 1})`;
                 }
+
+                // Mapeamento de Categoria para filtros do Dashboard
+                let categoriaFiltro = "Apenas Atendido";
+                if (entrouNaRegua) {
+                    if (respondeuNoFollowup === 1) categoriaFiltro = "Respondeu no 1º";
+                    else if (respondeuNoFollowup === 2) categoriaFiltro = "Respondeu no 2º";
+                    else if (respondeuNoFollowup === 3) categoriaFiltro = "Respondeu no 3º";
+                    else categoriaFiltro = "Não Respondeu";
+                }
+
+                globalProcessedFollowups.push({
+                    id: s.id,
+                    name: s.contactName || s.contato || s.name || "Cliente Desconhecido",
+                    phone: s.telefone ? s.telefone.split('@')[0] : "Sem Número",
+                    lastDate: sessionDate,
+                    entrouNaRegua: entrouNaRegua,
+                    respondeuNoFollowup: respondeuNoFollowup,
+                    ultimoLog: ultimoLogEncontrado,
+                    msgTotal: rawMsgs.length,
+                    categoria: categoriaFiltro,
+                    statusOriginal: s.status
+                });
             });
 
-            globalProcessedLeads = Array.from(leadsMap.values()).sort((a, b) => b.lastDate - a.lastDate);
-
-            const stats = {
-                totalLeads: globalProcessedLeads.length,
-                vendedor: globalProcessedLeads.filter(l => l.status === 'AGUARDANDO_VENDEDOR').length,
-                followAtrasado: globalProcessedLeads.filter(l => l.status === 'FOLLOW_UP_PENDENTE').length,
-                cliente: globalProcessedLeads.filter(l => l.status === 'AGUARDANDO_CLIENTE').length,
-                hoje: globalProcessedLeads.filter(l => l.idleHours < 24).length,
-                criticos: globalProcessedLeads.filter(l => l.idleHours >= 48).length
-            };
-
-            updateDashboard(stats);
+            calculateStats();
         }
 
-        function updateDashboard(stats) {
-            document.getElementById('count-leads').innerText = stats.totalLeads;
-            document.getElementById('count-vendedor').innerText = stats.vendedor;
-            document.getElementById('count-follow-atrasado').innerText = stats.followAtrasado;
-            document.getElementById('count-cliente').innerText = stats.cliente;
-            document.getElementById('count-hoje').innerText = stats.hoje;
-            document.getElementById('count-criticos').innerText = stats.criticos;
+        function calculateStats() {
+            const total = globalProcessedFollowups.length;
+            const naRegua = globalProcessedFollowups.filter(f => f.entrouNaRegua).length;
+            const f1 = globalProcessedFollowups.filter(f => f.respondeuNoFollowup === 1).length;
+            const f2 = globalProcessedFollowups.filter(f => f.respondeuNoFollowup === 2).length;
+            const f3 = globalProcessedFollowups.filter(f => f.respondeuNoFollowup === 3).length;
+            const reativosTotal = f1 + f2 + f3;
+            const ignorados = naRegua - reativosTotal;
 
-            document.getElementById('pizza-pendente-val').innerText = stats.vendedor;
-            document.getElementById('pizza-bola-val').innerText = (stats.vendedor + stats.followAtrasado);
-            document.getElementById('pizza-tempo-val').innerText = stats.criticos;
+            // Atualiza Cards do Topo
+            document.getElementById('count-total').innerText = total;
+            document.getElementById('count-regua').innerText = naRegua;
+            document.getElementById('count-f1').innerText = f1;
+            document.getElementById('count-f2').innerText = f2;
+            document.getElementById('count-f3').innerText = f3;
+            document.getElementById('count-ignorado').innerText = ignorados;
 
-            initCharts(stats);
-            currentFilteredLeads = globalProcessedLeads;
+            // Valores de Destaque numérico das Pizzas
+            document.getElementById('pizza-reativ-val').innerText = Math.round((reativosTotal / (naRegua || 1)) * 100) + "%";
+            document.getElementById('pizza-etapa-val').innerText = reativosTotal;
+            document.getElementById('pizza-status-val').innerText = globalProcessedFollowups.filter(f => f.entrouNaRegua && f.respondeuNoFollowup === 0).length;
+
+            initCharts(naRegua, ignorados, reativosTotal, f1, f2, f3);
+            
+            currentFilteredFollowups = globalProcessedFollowups;
             currentPage = 1;
             renderTable();
 
@@ -703,147 +618,109 @@
             document.getElementById('dashboard').style.display = 'block';
         }
 
-        function initCharts(stats) {
+        function initCharts(naRegua, ignorados, reativosTotal, f1, f2, f3) {
             const commonOptions = {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } },
-                onClick: (event, elements, chart) => {
-                    if (elements.length > 0) {
-                        const idx = elements[0].index;
-                        const label = chart.data.labels[idx];
-                        togglePieFilter(label);
-                    }
-                }
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } }
             };
 
-            if (chartStatus) chartStatus.destroy();
-            chartStatus = new Chart(document.getElementById('chartStatus'), {
+            // 1. Gráfico de Efetividade (Reagiu vs Ignorou)
+            if (chartEfetividade) chartEfetividade.destroy();
+            chartEfetividade = new Chart(document.getElementById('chartEfetividade'), {
                 type: 'doughnut',
                 data: {
-                    labels: ['Aguardando Vendedor', 'Follow-up Pendente', 'Aguardando Cliente'],
-                    datasets: [{
-                        data: [stats.vendedor, stats.followAtrasado, stats.cliente],
-                        backgroundColor: ['#d32f2f', '#f57c00', '#1e3c72'],
-                        borderWidth: 0
-                    }]
+                    labels: ['Reagiram ao Bot', 'Ignoraram Total'],
+                    datasets: [{ data: [reativosTotal, ignorados], backgroundColor: ['#43a047', '#e53935'], borderWidth: 0 }]
                 },
                 options: { ...commonOptions, cutout: '70%' }
             });
 
-            if (chartResponsabilidade) chartResponsabilidade.destroy();
-            chartResponsabilidade = new Chart(document.getElementById('chartResponsabilidade'), {
+            // 2. Distribuição das Respostas por Etapa do Script
+            if (chartEtapas) chartEtapas.destroy();
+            chartEtapas = new Chart(document.getElementById('chartEtapas'), {
                 type: 'pie',
                 data: {
-                    labels: ['Com a Empresa', 'Com o Cliente'],
-                    datasets: [{
-                        data: [stats.vendedor + stats.followAtrasado, stats.cliente],
-                        backgroundColor: ['#7b1fa2', '#cfd8dc']
-                    }]
+                    labels: ['No 1º Follow-up', 'No 2º Follow-up', 'Até o 3º Follow-up'],
+                    datasets: [{ data: [f1, f2, f3], backgroundColor: ['#1e88e5', '#7cb342', '#fdd835'] }]
                 },
                 options: commonOptions
             });
 
-            const tMenor24 = globalProcessedLeads.filter(l => l.idleHours < 24).length;
-            const t24a48 = globalProcessedLeads.filter(l => l.idleHours >= 24 && l.idleHours < 48).length;
-            const tMaior48 = stats.criticos;
+            // 3. Estado dos Cronômetros / Fluxos Ativos
+            if (chartStatusAtual) chartStatusAtual.destroy();
+            const ativos = globalProcessedFollowups.filter(f => f.entrouNaRegua && f.respondeuNoFollowup === 0 && f.statusOriginal !== "FINISHED").length;
+            const encerrados = globalProcessedFollowups.filter(f => f.ultimoLog.includes("Encerrado") || f.ultimoLog.includes("Fim")).length;
 
-            if (chartTempo) chartTempo.destroy();
-            chartTempo = new Chart(document.getElementById('chartTempo'), {
+            chartStatusAtual = new Chart(document.getElementById('chartStatusAtual'), {
                 type: 'pie',
                 data: {
-                    labels: ['< 24h', '24h - 48h', '> 48h'],
-                    datasets: [{
-                        data: [tMenor24, t24a48, tMaior48],
-                        backgroundColor: ['#2e7d32', '#ffa726', '#c62828']
-                    }]
+                    labels: ['Encerrado ou Ativo', 'Cadeia Encerrada'],
+                    datasets: [{ data: [ativos, encerrados], backgroundColor: ['#ffb300', '#78909c'] }]
                 },
                 options: commonOptions
             });
-        }
-
-        function togglePieFilter(label) {
-            document.querySelectorAll('.stat-card').forEach(c => c.classList.remove('active-filter-card'));
-            document.querySelectorAll('.big-num').forEach(n => n.classList.remove('active-filter-num'));
-
-            if (activePieFilter === label) {
-                activePieFilter = null;
-                currentFilteredLeads = globalProcessedLeads;
-            } else {
-                activePieFilter = label;
-                currentFilteredLeads = globalProcessedLeads.filter(lead => {
-                    switch (label) {
-                        case 'Aguardando Vendedor': return lead.status === 'AGUARDANDO_VENDEDOR';
-                        case 'Follow-up Pendente': return lead.status === 'FOLLOW_UP_PENDENTE';
-                        case 'Aguardando Cliente': return lead.status === 'AGUARDANDO_CLIENTE';
-                        case 'Com a Empresa': return lead.status === 'AGUARDANDO_VENDEDOR' || lead.status === 'FOLLOW_UP_PENDENTE';
-                        case 'Com o Cliente': return lead.status === 'AGUARDANDO_CLIENTE';
-                        case '< 24h': return lead.idleHours < 24;
-                        case '24h - 48h': return lead.idleHours >= 24 && lead.idleHours < 48;
-                        case '> 48h': return lead.idleHours >= 48;
-                        default: return true;
-                    }
-                });
-            }
-            currentPage = 1;
-            renderTable();
         }
 
         function renderTable() {
-            const data = currentFilteredLeads;
-            const totalPages = Math.ceil(data.length / itemsPerPage) || 1;
-
+            const totalPages = Math.ceil(currentFilteredFollowups.length / itemsPerPage) || 1;
             if (currentPage < 1) currentPage = 1;
             if (currentPage > totalPages) currentPage = totalPages;
 
             const start = (currentPage - 1) * itemsPerPage;
             const end = start + itemsPerPage;
-            const paginatedData = data.slice(start, end);
+            const paginatedData = currentFilteredFollowups.slice(start, end);
 
             const body = document.getElementById('table-body');
-
-            body.innerHTML = paginatedData.map(lead => {
-                let statusBadge = '';
-                if (lead.status === 'AGUARDANDO_VENDEDOR') {
-                    statusBadge = `<span class="badge badge-urgente"><i class="fas fa-exclamation-circle"></i> RESPONDER</span>`;
-                } else if (lead.status === 'FOLLOW_UP_PENDENTE') {
-                    statusBadge = `<span class="badge badge-pendente"><i class="fas fa-hourglass-half"></i> COBRAR LEAD</span>`;
-                } else {
-                    statusBadge = `<span class="badge badge-noprazo"><i class="fas fa-check"></i> EM DIA</span>`;
-                }
-
-                let tempoOciosoStr = '';
-                if (lead.idleHours === 0) {
-                    tempoOciosoStr = 'Agora mesmo';
-                } else if (lead.idleHours < 24) {
-                    tempoOciosoStr = `${lead.idleHours} hora(s)`;
-                } else {
-                    tempoOciosoStr = `${Math.floor(lead.idleHours / 24)} dia(s)`;
-                }
-
-                let phoneDisplay = lead.phoneId.split('@')[0];
+            body.innerHTML = paginatedData.map(f => {
+                
+                let badgeClass = "badge-status";
+                if (f.respondeuNoFollowup > 0) badgeClass = "badge-success-follow";
+                if (f.categoria === "Não Respondeu") badgeClass = "badge-fail-follow";
 
                 return `
                 <tr>
-                    <td>${lead.lastDate.toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}</td>
+                    <td>${f.lastDate.toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}</td>
                     <td>
-                        <div style="font-weight:bold; color:#333;">${lead.name}</div>
-                        <small style="color:#999;">${phoneDisplay}</small>
+                        <div style="font-weight:bold; color:#333;">${f.name}</div>
+                        <small style="color:#999;">${f.phone}</small>
                     </td>
-                    <td style="text-align:center">${statusBadge}</td>
-                    <td><b>${lead.lastSender}</b></td>
-                    <td><span class="medida-tag">${tempoOciosoStr}</span></td>
-                    <td style="text-align:center">${lead.msgTotal}</td>
-                    <td><a href="https://muvecom.wts.chat/chat2/sessions/${lead.sessionId}" target="_blank" class="btn-action">Ver Chat</a></td>
+                    <td><span class="badge ${badgeClass}">${f.categoria}</span></td>
+                    <td><i class="fas fa-terminal" style="font-size:0.8rem; color:#aaa;"></i> <b>${f.ultimoLog}</b></td>
+                    <td style="text-align: center;">${f.msgTotal}</td>
+                    <td><a href="https://muvecom.wts.chat/chat2/sessions/${f.id}" target="_blank" class="btn-action">Ver Linha do Tempo</a></td>
                 </tr>
-            `}).join('');
+                `;
+            }).join('');
 
-            const paginationControls = document.getElementById('pagination-controls');
-            paginationControls.innerHTML = `
+            document.getElementById('pagination-controls').innerHTML = `
                 <button class="pagination-btn" onclick="changePage(-1)" ${currentPage === 1 ? 'disabled' : ''}>Anterior</button>
-                <span class="pagination-info">Página ${currentPage} de ${totalPages} (Total: ${data.length})</span>
+                <span class="pagination-info">Página ${currentPage} de ${totalPages} (Total: ${currentFilteredFollowups.length})</span>
                 <button class="pagination-btn" onclick="changePage(1)" ${currentPage === totalPages ? 'disabled' : ''}>Próxima</button>
             `;
+        }
+
+        function togglePieFilter(filtro) {
+            document.querySelectorAll('.stat-card').forEach(c => c.classList.remove('active-filter-card'));
+            if (activePieFilter === filtro) {
+                activePieFilter = null;
+                currentFilteredFollowups = globalProcessedFollowups;
+            } else {
+                activePieFilter = filtro;
+                // Aplica realce visual no card clicado
+                event.currentTarget.classList.add('active-filter-card');
+
+                currentFilteredFollowups = globalProcessedFollowups.filter(f => {
+                    if (filtro === 'Entrou Na Régua') return f.entrouNaRegua;
+                    if (filtro === 'Respondeu no 1º') return f.respondeuNoFollowup === 1;
+                    if (filtro === 'Respondeu no 2º') return f.respondeuNoFollowup === 2;
+                    if (filtro === 'Respondeu no 3º') return f.respondeuNoFollowup === 3;
+                    if (filtro === 'Não Respondeu') return f.entrouNaRegua && f.respondeuNoFollowup === 0;
+                    if (filtro === 'Reagiu') return f.respondeuNoFollowup > 0;
+                    return true;
+                });
+            }
+            currentPage = 1;
+            renderTable();
         }
 
         function changePage(delta) {
@@ -854,11 +731,11 @@
         function resetFilter() {
             activePieFilter = null;
             document.querySelectorAll('.stat-card').forEach(c => c.classList.remove('active-filter-card'));
-            document.querySelectorAll('.big-num').forEach(n => n.classList.remove('active-filter-num'));
-            currentFilteredLeads = globalProcessedLeads;
+            currentFilteredFollowups = globalProcessedFollowups;
             currentPage = 1;
             renderTable();
         }
     </script>
 </body>
+
 </html>
