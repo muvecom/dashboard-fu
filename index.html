@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard de Conversas IA & Vendas</title>
+    <title>Dashboard de Monitoramento de Follow-ups</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -90,7 +90,7 @@
             background: rgba(255, 255, 255, 0.3);
         }
 
-        /* SEÇÃO DE PIZZAS */
+        /* SEÇÃO DE GRÁFICOS */
         .charts-row {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -208,46 +208,17 @@
         }
 
         /* Cores Cards */
-        .border-blue {
-            border-color: #1e3c72;
-        }
+        .border-blue { border-color: #1e3c72; }
+        .border-green { border-color: #2e7d32; }
+        .border-red { border-color: #d32f2f; }
+        .border-orange { border-color: #f57c00; }
+        .border-purple { border-color: #7b1fa2; }
 
-        .border-purple {
-            border-color: #7b1fa2;
-        }
-
-        .border-green {
-            border-color: #2e7d32;
-        }
-
-        .border-red {
-            border-color: #d32f2f;
-        }
-
-        .border-orange {
-            border-color: #f57c00;
-        }
-
-        /* Cores Textos */
-        .text-green {
-            color: #2e7d32;
-        }
-
-        .text-red {
-            color: #d32f2f;
-        }
-
-        .text-purple {
-            color: #7b1fa2;
-        }
-
-        .text-orange {
-            color: #f57c00;
-        }
-
-        .text-blue {
-            color: #1e3c72;
-        }
+        .text-green { color: #2e7d32; }
+        .text-red { color: #d32f2f; }
+        .text-purple { color: #7b1fa2; }
+        .text-orange { color: #f57c00; }
+        .text-blue { color: #1e3c72; }
 
         /* TABELA DE DADOS */
         .table-container {
@@ -296,42 +267,27 @@
             display: inline-block;
         }
 
-        .badge-qualificado {
-            background-color: #e8f5e9;
-            color: #2e7d32;
-            border: 1px solid #c8e6c9;
-        }
-
-        .badge-n-qualificado {
+        .badge-urgente {
             background-color: #ffebee;
             color: #c62828;
             border: 1px solid #ffcdd2;
         }
 
-        .badge-venda {
-            background-color: #f3e5f5;
-            color: #7b1fa2;
-            border: 1px solid #e1bee7;
+        .badge-pendente {
+            background-color: #fff3e0;
+            color: #e65100;
+            border: 1px solid #ffe0b2;
         }
 
-        .temp-quente {
-            color: #d32f2f;
-            font-weight: 700;
-        }
-
-        .temp-morno {
-            color: #f57c00;
-            font-weight: 700;
-        }
-
-        .temp-frio {
-            color: #1e3c72;
-            font-weight: 700;
+        .badge-noprazo {
+            background-color: #e3f2fd;
+            color: #0d47a1;
+            border: 1px solid #bbdefb;
         }
 
         .medida-tag {
-            background: #e3f2fd;
-            color: #1565c0;
+            background: #f1f3f4;
+            color: #333;
             padding: 2px 6px;
             border-radius: 4px;
             font-family: monospace;
@@ -422,35 +378,6 @@
             transition: 0.2s;
         }
 
-        /* Responsividade básica */
-        @media (max-width: 1200px) {
-            .stats-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
-
-        @media (max-width: 1000px) {
-            .charts-row {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (max-width: 768px) {
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (max-width: 600px) {
-            .charts-row {
-                grid-template-columns: 1fr;
-            }
-
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
         .pagination-container {
             display: flex;
             justify-content: center;
@@ -485,43 +412,6 @@
             font-size: 14px;
             font-weight: 500;
         }
-
-        .alert-hoje-banner {
-            display: none;
-            background: linear-gradient(135deg, #ff6f00 0%, #e65100 100%);
-            color: white;
-            padding: 16px 24px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(230, 81, 0, 0.3);
-            font-size: 0.95rem;
-            line-height: 1.5;
-            position: relative;
-            animation: slideDown 0.4s ease-out;
-        }
-
-        .alert-hoje-banner.visible {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-
-        .alert-hoje-banner i {
-            font-size: 1.6rem;
-            flex-shrink: 0;
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-15px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
     </style>
 </head>
 
@@ -534,16 +424,15 @@
             <input type="password" id="tokenInput" placeholder="Cole seu token aqui...">
             <button class="btn-primary" onclick="saveTokenAndLoad()">Acessar Dashboard</button>
             <a href="https://muvecom.wts.chat/integration/token" target="_blank"
-                style="display: block; margin-top: 15px; font-size: 0.9rem; color: #2a5298; text-decoration: none;">Esqueceu
-                o token?</a>
+                style="display: block; margin-top: 15px; font-size: 0.9rem; color: #2a5298; text-decoration: none;">Esqueceu o token?</a>
         </div>
     </div>
 
     <div class="container">
         <header>
             <div class="header-info">
-                <h1 id="dashboard-title"><i class="fas fa-chart-line"></i> Dashboard Vendas & IA</h1>
-                <p id="dashboard-subtitle">Métricas por Lead, Qualificação e Conversão de Vendas</p>
+                <h1 id="dashboard-title"><i class="fas fa-clock"></i> Monitor de Follow-ups</h1>
+                <p id="dashboard-subtitle">Controle de SLAs, tempo ocioso e pendências de resposta por Lead</p>
             </div>
             <div class="header-actions">
                 <input type="date" id="startDate" class="date-filter" title="Data Início">
@@ -554,13 +443,7 @@
 
         <div id="loading" class="loading-container">
             <i class="fas fa-circle-notch fa-spin"></i>
-            <h3>Processando e agrupando leads...</h3>
-        </div>
-
-        <div id="alertHojeBanner" class="alert-hoje-banner">
-            <i class="fas fa-exclamation-triangle"></i>
-            <span id="bannerText">O agente não está qualificando corretamente hoje. O dashboard foi filtrado para o
-                período selecionado para que os detalhes possam ser verificados.</span>
+            <h3>Analisando interações e calculando ociosidade...</h3>
         </div>
 
         <div id="dashboard" style="display: none;">
@@ -569,82 +452,81 @@
                 <div class="chart-box">
                     <div class="chart-header">
                         <div>
-                            <h4 id="chart-vendas-title">Conversão Vendas</h4>
-                            <span style="font-size:0.8rem; color:#999">Base: Total Leads</span>
+                            <h4>Status do Follow-up</h4>
+                            <span style="font-size:0.8rem; color:#999">Atraso global da base</span>
                         </div>
-                        <div class="big-num text-purple" id="pizza-vendas-val" onclick="togglePieFilter('Vendeu')">0%</div>
+                        <div class="big-num text-red" id="pizza-pendente-val" onclick="togglePieFilter('Aguardando Vendedor')">0</div>
                     </div>
                     <div class="chart-canvas-wrapper">
-                        <canvas id="chartVendas"></canvas>
+                        <canvas id="chartStatus"></canvas>
                     </div>
                 </div>
 
                 <div class="chart-box">
                     <div class="chart-header">
                         <div>
-                            <h4>Qualificação</h4>
-                            <span style="font-size:0.8rem; color:#999">Leads Qualificados</span>
+                            <h4>Com quem está a bola?</h4>
+                            <span style="font-size:0.8rem; color:#999">Distribuição de ação</span>
                         </div>
-                        <div class="big-num text-green" id="pizza-qual-val" onclick="togglePieFilter('Qualificado')">0</div>
+                        <div class="big-num text-purple" id="pizza-bola-val" onclick="togglePieFilter('Com a Empresa')">0</div>
                     </div>
                     <div class="chart-canvas-wrapper">
-                        <canvas id="chartMain"></canvas>
+                        <canvas id="chartResponsabilidade"></canvas>
                     </div>
                 </div>
 
                 <div class="chart-box">
                     <div class="chart-header">
                         <div>
-                            <h4>Temperatura</h4>
-                            <span style="font-size:0.8rem; color:#999">Dos Qualificados</span>
+                            <h4>Tempo de Inatividade</h4>
+                            <span style="font-size:0.8rem; color:#999">Idade do último contato</span>
                         </div>
-                        <div class="big-num text-red" id="pizza-quente-val" onclick="togglePieFilter('Quente')">0</div>
+                        <div class="big-num text-orange" id="pizza-tempo-val" onclick="togglePieFilter('> 48h')">0</div>
                     </div>
                     <div class="chart-canvas-wrapper">
-                        <canvas id="chartSub"></canvas>
+                        <canvas id="chartTempo"></canvas>
                     </div>
                 </div>
             </div>
 
-            <div class="section-title">Métricas de Leads (Pessoas Únicas)</div>
+            <div class="section-title">Métricas de Resposta (Filtros Rápidos)</div>
             <div class="stats-grid">
                 <div class="stat-card border-blue" onclick="resetFilter()">
-                    <h3>Total Leads Únicos</h3>
+                    <h3>Total Atendimentos</h3>
                     <div class="stat-value" id="count-leads">0</div>
                 </div>
-                <div class="stat-card border-purple" onclick="togglePieFilter('Vendeu')">
-                    <h3 id="card-vendas-title">Vendas Realizadas (Leads)</h3>
-                    <div class="stat-value text-purple" id="count-vendas">0</div>
+                <div class="stat-card border-red" onclick="togglePieFilter('Aguardando Vendedor')">
+                    <h3>Aguardando Vendedor</h3>
+                    <div class="stat-value text-red" id="count-vendedor">0</div>
                 </div>
-                <div class="stat-card border-green" onclick="togglePieFilter('Qualificado')">
-                    <h3>Leads Qualificados</h3>
-                    <div class="stat-value text-green" id="count-qual-leads">0</div>
+                <div class="stat-card border-orange" onclick="togglePieFilter('Follow-up Pendente')">
+                    <h3>Follow-up Atrasado</h3>
+                    <div class="stat-value text-orange" id="count-follow-atrasado">0</div>
                 </div>
-                <div class="stat-card border-red" onclick="togglePieFilter('Quente')">
-                    <h3>Leads Quentes</h3>
-                    <div class="stat-value text-red" id="count-quente-leads">0</div>
+                <div class="stat-card border-green" onclick="togglePieFilter('Aguardando Cliente')">
+                    <h3>Aguardando Cliente</h3>
+                    <div class="stat-value text-green" id="count-cliente">0</div>
                 </div>
-                <div class="stat-card border-orange" onclick="togglePieFilter('Morno')">
-                    <h3>Leads Mornos</h3>
-                    <div class="stat-value text-orange" id="count-morno-leads">0</div>
+                <div class="stat-card border-blue" onclick="togglePieFilter('< 24h')">
+                    <h3>Ativos Hoje (&lt;24h)</h3>
+                    <div class="stat-value text-blue" id="count-hoje">0</div>
                 </div>
-                <div class="stat-card border-blue" onclick="togglePieFilter('Frio')">
-                    <h3>Leads Frios</h3>
-                    <div class="stat-value text-blue" id="count-frio-leads">0</div>
+                <div class="stat-card border-purple" onclick="togglePieFilter('> 48h')">
+                    <h3>Críticos (&gt;48h)</h3>
+                    <div class="stat-value text-purple" id="count-criticos">0</div>
                 </div>
             </div>
 
-            <div class="section-title">Detalhamento das Conversas</div>
+            <div class="section-title">Detalhamento Fila de Acompanhamento</div>
             <div class="table-container">
                 <table>
                     <thead>
                         <tr>
-                            <th>Data/Hora (Última)</th>
+                            <th>Última Interação</th>
                             <th>Lead (Telefone)</th>
-                            <th id="th-status-venda" style="text-align:center">Status Venda</th>
-                            <th>Qualificação</th>
-                            <th>Temp.</th>
-                            <th id="th-interesse">Interesse (Marca/Medida)</th>
+                            <th style="text-align:center">Status Fila</th>
+                            <th>Último Remetente</th>
+                            <th>Tempo Sem Resposta</th>
                             <th>Total Msgs</th>
                             <th>Ação</th>
                         </tr>
@@ -658,152 +540,30 @@
 
     <script>
         const WEBHOOK_URL = 'https://evo.muvecom.com.br/webhook/de8b08a0-e58e-4f02-b34c-218a682f9924';
-        const NICHES = {
-            PNEUS: {
-                keywords: ['PNEU', 'ARO', 'BALANCEAMENTO', 'ALINHAMENTO', 'CAMBAGEM'],
-                produtos: ['PNEU', 'ARO', 'BALANCEAMENTO', 'ALINHAMENTO', 'RODA', 'CAMBAGEM', 'SUSPENSAO', 'FREIO', 'OLEO'],
-                marcas: ['MICHELIN', 'PIRELLI', 'GOODYEAR', 'CONTINENTAL', 'DUNLOP', 'BRIDGESTONE', 'FIRESTONE', 'KUMHO', 'YOKOHAMA'],
-                negativos: ['FAROL', 'LANTERNA', 'MOTOR', 'PARACHOQUE', 'LATA', 'PINTURA', 'VIDRO']
-            },
-            CONCESSIONARIA: {
-                keywords: ['SEMINOVO', 'TEST DRIVE', 'TEST-DRIVE', 'FINANCIAMENTO', 'CARRO NOVO', 'USADO', 'VEÍCULO', 'VEICULO', 'CONCESSIONARIA', 'CONCESSIONÁRIA', 'ZEEKR'],
-                produtos: ['CARRO', 'SEMINOVO', 'TEST DRIVE', 'TEST-DRIVE', 'FINANCIAMENTO', 'VEÍCULO', 'VEICULO', 'USADO', 'CONSÓRCIO', 'CONSORCIO', 'VISITA', 'LOJA'],
-                marcas: ['CHEVROLET', 'VOLKSWAGEN', 'FIAT', 'FORD', 'TOYOTA', 'HONDA', 'HYUNDAI', 'RENAULT', 'JEEP', 'NISSAN', 'BYD', 'GWM', 'CHERY', 'PEUGEOT', 'CITROEN', 'ZEEKR'],
-                modelos: {
-                    'ZEEKR': ['001', 'X', '7X', '9X', '002', '007', '009', 'MIX'],
-                    'BYD': ['DOLPHIN', 'SEAL', 'SONIC', 'YUAN', 'SONG', 'KING', 'TAN', 'HAN'],
-                    'GWM': ['HAVAL', 'ORA', 'POER'],
-                    'TOYOTA': ['COROLLA', 'HILUX', 'YARIS', 'SW4', 'PRIUS', 'RAV4'],
-                    'HONDA': ['CIVIC', 'HR-V', 'CITY', 'FIT', 'WR-V', 'CR-V'],
-                    'FIAT': ['ARGO', 'CRONOS', 'TORO', 'FASTBACK', 'PULSE', 'MOBI', 'STRADA', 'DUCATO', 'UNO', 'PALIO'],
-                    'CHEVROLET': ['ONIX', 'PRISMA', 'TRACKER', 'S10', 'EQUINOX', 'SPIN', 'MONTANA', 'CRUZE', 'COBALT'],
-                    'VOLKSWAGEN': ['GOL', 'POLO', 'VIRTUS', 'T-CROSS', 'NIVUS', 'TAOS', 'AMAROK', 'SAVEIRO', 'JETTA', 'PASSAT'],
-                    'HYUNDAI': ['HB20', 'CRETA', 'TUCSON', 'IX35', 'SANTA FE'],
-                    'JEEP': ['COMPASS', 'RENEGADE', 'COMMANDER', 'WRANGLER'],
-                    'FORD': ['KA', 'FIESTA', 'FOCUS', 'RANGER', 'ECOSPORT', 'TERRITORY', 'BRONCO']
-                },
-                negativos: ['MOTO', 'BICICLETA', 'CAMINHÃO', 'TRATOR', 'PNEU', 'BALANC', 'ALINHA']
-            },
-            AUTO_SERVICE: {
-                keywords: ['REVISÃO', 'OFICINA', 'MOTOR', 'MECÂNICO', 'INJEÇÃO', 'CORREIA', 'EMBREAGEM', 'MECANICO'],
-                produtos: ['REVISÃO', 'MOTOR', 'INJEÇÃO', 'CORREIA', 'EMBREAGEM', 'OLEO', 'FREIO', 'SUSPENSAO', 'AMORTECEDOR', 'BATERIA', 'VELA', 'FILTRO'],
-                marcas: ['BOSCH', 'MOURA', 'HELIAR', 'ACDELCO', 'MAGNETI', 'NGK', 'COFAP', 'MONROE', 'LUK', 'SACHS', 'DAYCO', 'GATES'],
-                negativos: ['PNEU NOVO', 'PINTURA', 'FUNILARIA', 'MARTELINHO', 'SEMINOVO', 'CARRO NOVO']
-            },
-            GENERICO: {
-                keywords: [],
-                produtos: ['PREÇO', 'VALOR', 'CATÁLOGO', 'CATALOGO', 'COMPRAR', 'PEDIDO', 'PRODUTO', 'ORÇAMENTO', 'ORCAMENTO', 'DISPONIVEL', 'DISPONÍVEL', 'FOTOS', 'MODELOS'],
-                marcas: [],
-                negativos: ['RECLAMAÇÃO', 'DEFEITO', 'ASSISTÊNCIA', 'CANCELAR']
-            }
-        };
-
-        const TERMOS_QUENTE = ['HOJE', 'AMANHÃ', 'AMANA', 'AGORA', 'URGENTE', 'JA', 'JÁ', 'ESTOU INDO', '15 DIAS', 'QUINZE DIAS', 'COMPRAR', 'QUERO'];
-        const TERMOS_CHAVE_VENDA = ['VEND', 'PAG', 'FECH', 'CLIENTE', 'ASSIN'];
-
-        let currentNicheKey = 'GENERICO';
-        let activeNiche = NICHES.GENERICO;
-
-        // Identifica de maneira robusta a origem da mensagem (Cliente vs Bot/Humano/API)
-        function isClientMessage(m) {
-            if (!m) return false;
-            // Se for explicitamente outbound, da própria instância ou enviado por robô/agente
-            if (m.fromMe === true || m.me === true || m.isOutbound === true || m.tipo === "outbound") return false;
-            if (m.fromBot === true || m.isBot === true) return false;
-            
-            // Se for marcado como inbound/entrada
-            if (m.fromMe === false || m.me === false || m.isInbound === true || m.tipo === "inbound") return true;
-            
-            // Suporte para chaves padrão da Evolution API / Baileys
-            if (m.key && m.key.fromMe !== undefined) return !m.key.fromMe;
-            
-            // Fallback: se o fromBot for falso, assumimos que veio do cliente
-            if (m.fromBot === false) return true;
-            
-            return true; 
-        }
-
-        // Extrai de forma resiliente o texto de dentro do objeto da mensagem, independente da estrutura do JSON
-        function getMessageText(m) {
-            if (!m) return "";
-            if (typeof m === 'string') return m;
-            if (m.texto) return m.texto;
-            if (m.text) return typeof m.text === 'string' ? m.text : (m.text.text || m.text.conversation || "");
-            if (m.body) return m.body;
-            if (m.message) {
-                if (typeof m.message === 'string') return m.message;
-                if (m.message.conversation) return m.message.conversation;
-                if (m.message.extendedTextMessage && m.message.extendedTextMessage.text) return m.message.extendedTextMessage.text;
-            }
-            if (m.mensagem) return typeof m.mensagem === 'string' ? m.mensagem : (m.mensagem.texto || m.mensagem.text || "");
-            return "";
-        }
-
-        function detectNiche(text, dashboardName = '') {
-            let scores = { PNEUS: 0, CONCESSIONARIA: 0, AUTO_SERVICE: 0 };
-            const nameUpper = dashboardName.toUpperCase();
-            
-            if (nameUpper.includes('PNEU')) scores.PNEUS += 50;
-            if (nameUpper.includes('ZEEKR') || nameUpper.includes('CONCESSIONARIA') || nameUpper.includes('VEICULO') || nameUpper.includes('CARRO') || nameUpper.includes('AUTO') || nameUpper.includes('MOTORS')) {
-                scores.CONCESSIONARIA += 30;
-            }
-            if (nameUpper.includes('OFICINA') || nameUpper.includes('MECANIC') || nameUpper.includes('SERVICE')) scores.AUTO_SERVICE += 30;
-
-            for (let niche in scores) {
-                NICHES[niche].keywords.forEach(kw => {
-                    const regex = new RegExp('\\b' + kw + '\\b', 'gi');
-                    const matches = text.match(regex);
-                    if (matches) scores[niche] += matches.length * 2;
-                    
-                    const subMatches = (text.match(new RegExp(kw, 'gi')) || []).length;
-                    scores[niche] += subMatches;
-                });
-            }
-            let max = 0;
-            currentNicheKey = 'GENERICO';
-            for (let niche in scores) {
-                if (scores[niche] > max && scores[niche] > 5) {
-                    max = scores[niche];
-                    currentNicheKey = niche;
-                }
-            }
-            activeNiche = NICHES[currentNicheKey];
-        }
-
+        
         let currentToken = null;
         let globalRawSessions = []; 
         let globalProcessedLeads = []; 
         let currentFilteredLeads = [];
-        let chartVendas, mainChart, subChart;
+        let chartStatus, chartResponsabilidade, chartTempo;
         let activePieFilter = null;
         let currentPage = 1;
         const itemsPerPage = 10;
 
         document.addEventListener('DOMContentLoaded', () => {
             const today = new Date();
-            const sixMonthsAgo = new Date();
-            sixMonthsAgo.setMonth(today.getMonth() - 6);
+            const oneMonthAgo = new Date();
+            oneMonthAgo.setDate(today.getDate() - 30);
 
             const urlParams = new URLSearchParams(window.location.search);
-            const erroParam = urlParams.get('erro');
             const nomeParam = urlParams.get('nome');
-            const tokenParam = urlParams.get('token'); 
+            const tokenParam = urlParams.get('token');
 
             if (nomeParam) {
-                document.getElementById('dashboard-title').innerHTML = `<i class="fas fa-chart-line"></i> ${nomeParam}`;
+                document.getElementById('dashboard-title').innerHTML = `<i class="fas fa-clock"></i> Monitor Follow-up - ${nomeParam}`;
             }
 
-            if (erroParam) {
-                let displayDate = erroParam;
-                if (erroParam.includes('-')) {
-                    const parts = erroParam.split('-');
-                    if (parts.length === 3) displayDate = `${parts[2]}/${parts[1]}/${parts[0]}`;
-                }
-                document.getElementById('bannerText').innerHTML = `O agente não está qualificando corretamente em <b>${displayDate}</b>...`;
-                document.getElementById('alertHojeBanner').classList.add('visible');
-            }
-
-            document.getElementById('startDate').value = sixMonthsAgo.toISOString().split('T')[0];
+            document.getElementById('startDate').value = oneMonthAgo.toISOString().split('T')[0];
             document.getElementById('endDate').value = today.toISOString().split('T')[0];
 
             if (tokenParam) {
@@ -831,110 +591,21 @@
             document.getElementById('dashboard').style.display = 'none';
             document.getElementById('loading').style.display = 'block';
 
-            const urlParams = new URLSearchParams(window.location.search);
-            const erroParam = urlParams.get('erro');
-
-            const bodyPayload = { token: currentToken };
-            if (erroParam) bodyPayload.erro = erroParam;
-
             try {
                 const response = await fetch(WEBHOOK_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(bodyPayload)
+                    body: JSON.stringify({ token: currentToken })
                 });
                 const rawData = await response.json();
-                
-                // Mapeamento dinâmico e flexível do array de dados vindo do servidor webhook
-                if (Array.isArray(rawData)) {
-                    globalRawSessions = rawData;
-                } else if (rawData && typeof rawData === 'object') {
-                    globalRawSessions = rawData.content || rawData.data || rawData.sessions || rawData.leads || [];
-                    if (!Array.isArray(globalRawSessions)) {
-                        const foundArray = Object.values(rawData).find(val => Array.isArray(val));
-                        globalRawSessions = foundArray || [];
-                    }
-                } else {
-                    globalRawSessions = [];
-                }
-
-                let allTextSample = '';
-                globalRawSessions.slice(0, 150).forEach(s => {
-                    const rawMsgs = Array.isArray(s.messages) ? s.messages : (Array.isArray(s.mensagens) ? s.mensagens : (Array.isArray(s.chats) ? s.chats : []));
-                    rawMsgs.forEach(m => {
-                        allTextSample += getMessageText(m).toUpperCase() + " ";
-                    });
-                });
-                const nomeParam = new URLSearchParams(window.location.search).get('nome') || '';
-                detectNiche(allTextSample, nomeParam);
-
+                globalRawSessions = Array.isArray(rawData) ? rawData : (rawData.content || []);
                 processLeads();
             } catch (error) {
                 console.error(error);
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('tokenModal').classList.add('active');
-                let errMsg = error.toString();
-                if (errMsg.includes("Unexpected end of JSON input") || errMsg.includes("json")) {
-                    alert("Erro ao carregar os dados.\n\nAguarde 1 minuto e tente novamente.\n\nDetalhes: " + errMsg);
-                } else {
-                    alert("Erro ao carregar ou token inválido:\n" + errMsg);
-                }
+                alert("Erro ao conectar ou token inválido.");
             }
-        }
-
-        function calculateLeadScore(allText, currentNiche) {
-            if (!allText) return 0;
-            const upperText = allText.toUpperCase();
-            let score = 0;
-
-            let matchesProduto = false;
-            if (currentNiche === 'CONCESSIONARIA') {
-                const actNiche = NICHES.CONCESSIONARIA;
-                const temMarca = actNiche.marcas.some(m => upperText.includes(m));
-                const temModelo = actNiche.marcas.some(m => {
-                    if (!actNiche.modelos[m]) return false;
-                    return actNiche.modelos[m].some(mod => {
-                        const reg = new RegExp('\\b' + mod + '\\b', 'i');
-                        return reg.test(upperText);
-                    });
-                });
-                const zeekrMatch = upperText.match(/\b(00[1-9]|[1-9]x)\b/i) || (upperText.includes('ZEEKR') && upperText.match(/\b(x)\b/i));
-                matchesProduto = temMarca || temModelo || !!zeekrMatch;
-            } else if (currentNiche === 'PNEUS') {
-                const actNiche = NICHES.PNEUS;
-                const temMedida = upperText.match(/\d{3}[\/\s]\d{2}[\/\s]?R?\s?\d{2}/i);
-                const temMarca = actNiche.marcas.some(m => upperText.includes(m));
-                const temProduto = actNiche.produtos.some(p => upperText.includes(p));
-                matchesProduto = temMedida || temMarca || temProduto;
-            } else if (currentNiche === 'AUTO_SERVICE') {
-                const actNiche = NICHES.AUTO_SERVICE;
-                const temMarca = actNiche.marcas.some(m => upperText.includes(m));
-                const temProduto = actNiche.produtos.some(p => upperText.includes(p));
-                matchesProduto = temMarca || temProduto;
-            } else {
-                matchesProduto = NICHES.GENERICO.produtos.some(p => upperText.includes(p));
-            }
-
-            if (matchesProduto) score += 2;
-
-            const matchAny = (list) => list.some(word => upperText.includes(word));
-
-            const precoWords = ['PREÇO', 'PRECO', 'VALOR', 'CUSTA', 'CUSTO', 'ORÇAMENTO', 'ORCAMENTO', 'TABELA', 'NEGOCIAR', 'DESCONTO', 'QUANTO FICA', 'VALORES', 'COTAR', 'COTAÇÃO', 'COTACAO'];
-            if (matchAny(precoWords)) score += 1;
-
-            const detalhesWords = ['CARACTERÍSTICA', 'CARACTERISTICA', 'DETALHE', 'FICHA TÉCNICA', 'FICHA TECNICA', 'VERSÃO', 'VERSAO', 'ANO', 'KM', 'MOTOR', 'COR', 'MANUAL', 'AUTOMÁTICO', 'AUTOMATICO', 'AUTONOMIA', 'BATERIA', 'ESPECIFICAÇÕES', 'ESPECIFICACOES', 'MARCA', 'MEDIDA', 'ARO', 'LARGURA', 'PERFIL', 'ÍNDICE', 'INDICE', 'PEÇA', 'PECA'];
-            if (matchAny(detalhesWords)) score += 1;
-
-            const pagamentoWords = ['FINANCIAMENTO', 'FINANCIAR', 'PARCELA', 'ENTRADA', 'CARTÃO', 'CARTAO', 'PIX', 'BOLETO', 'CONSÓRCIO', 'CONSORCIO', 'JUROS', 'TAXA', 'PAGAMENTO', 'AVISTA', 'À VISTA', 'A VISTA', 'PARCELADO', 'CRÉDITO', 'CREDITO', 'DÉBITO', 'DEBITO', 'CONDIÇÃO', 'CONDICAO'];
-            if (matchAny(pagamentoWords)) score += 1;
-
-            const visitaWords = ['VISITA', 'VISITAR', 'TEST DRIVE', 'TEST-DRIVE', 'TESTDRIVE', 'AGENDAR', 'AGENDAMENTO', 'TESTAR', 'ANDAR NO CARRO', 'IR NA LOJA', 'IR AÍ', 'IR AI', 'CONHECER O CARRO', 'ENDEREÇO', 'ENDERECO', 'ONDE FICA', 'LOCALIZAÇÃO', 'LOCALIZACAO', 'LEVAR O CARRO', 'MARCAR', 'HORÁRIO', 'HORARIO', 'AGENDA', 'COMPARECER'];
-            if (matchAny(visitaWords)) score += 3;
-
-            const comprarWords = ['DECIDIDO', 'VOU COMPRAR', 'QUERO COMPRAR', 'COMPRAR HOJE', 'FECHAR NEGÓCIO', 'FECHAR NEGOCIO', 'COMPRAR AGORA', 'FECHAR HOJE', 'QUERO FECHAR', 'COMPRAREI', 'VOU LEVAR', 'QUERO LEVAR', 'FECHADO', 'CONTRATAR', 'RESERVAR', 'RESERVA'];
-            if (matchAny(comprarWords)) score += 2;
-
-            return score;
         }
 
         function processLeads() {
@@ -944,232 +615,84 @@
             const endDate = endDateStr ? new Date(endDateStr + 'T23:59:59') : new Date('2100-01-01');
 
             const leadsMap = new Map();
+            const now = new Date();
 
             globalRawSessions.forEach(s => {
-                let rawDate = s.createdAt || s.ultInteracao || s.data || s.updatedAt;
-                let sessionDate;
-                
-                if (!rawDate) {
-                    sessionDate = new Date();
-                } else if (!isNaN(rawDate)) {
-                    let num = Number(rawDate);
-                    if (num < 10000000000) num *= 1000; // Converte carimbo Unix de segundos para milissegundos
-                    sessionDate = new Date(num);
-                } else {
-                    sessionDate = new Date(rawDate);
-                }
-
-                if (isNaN(sessionDate.getTime()) || sessionDate < startDate || sessionDate > endDate) {
-                    return; 
-                }
+                const sessionDate = new Date(s.createdAt || s.ultInteracao || s.data || Date.now());
+                if (sessionDate < startDate || sessionDate > endDate) return;
 
                 let leadId = s.telefone && s.telefone !== "Sem Telefone" ? s.telefone : s.id;
-                if (!leadId && s.key && s.key.remoteJid) leadId = s.key.remoteJid;
-                if (!leadId) leadId = "unknown_" + Math.random();
+                const leadName = s.contactName || s.contato || s.name || "Desconhecido";
+
+                const rawMsgs = s.messages || s.mensagens || [];
+                if (rawMsgs.length === 0) return;
+
+                // Captura a última mensagem cronológica real do array
+                const lastMsg = rawMsgs[rawMsgs.length - 1];
                 
-                const leadName = s.contactName || s.contato || s.name || s.pushName || "Desconhecido";
+                // Valida o remetente de forma correta sem inverter booleano
+                const isBotOrMe = lastMsg.fromBot === true || lastMsg.fromMe === true || lastMsg.isBot === true || lastMsg.sender === 'bot' || lastMsg.sender === 'agent';
+                const lastSender = isBotOrMe ? 'EMPRESA' : 'CLIENTE';
 
-                const rawMsgs = Array.isArray(s.messages) ? s.messages : (Array.isArray(s.mensagens) ? s.mensagens : (Array.isArray(s.chats) ? s.chats : []));
-                
-                let allTextClient = "";
-                let allTextGeneral = "";
-                let totalMsgsCount = rawMsgs.length;
-                let ultimoContatoDeQuem = "cliente";
+                const idleTimeMs = now - sessionDate;
+                const idleHours = Math.floor(idleTimeMs / (1000 * 60 * 60));
 
-                if (totalMsgsCount > 0) {
-                    const lastMsg = rawMsgs[totalMsgsCount - 1];
-                    if (!isClientMessage(lastMsg)) {
-                        ultimoContatoDeQuem = "nosso"; // O bot/humano enviou e o cliente não respondeu ainda
-                    }
-                }
-
-                rawMsgs.forEach(m => {
-                    const txt = getMessageText(m);
-                    allTextGeneral += txt.toUpperCase() + " ";
-                    if (isClientMessage(m)) {
-                        allTextClient += txt.toUpperCase() + " ";
-                    }
-                });
-
-                let medida = null;
-                let modelo = null;
-                if (currentNicheKey === 'PNEUS') {
-                    const medidaEncontrada = allTextGeneral.match(/\d{3}[\/\s]\d{2}[\/\s]?R?\s?\d{2}/i);
-                    medida = medidaEncontrada ? medidaEncontrada[0] : null;
-                } else if (currentNicheKey === 'CONCESSIONARIA') {
-                    const zeekrModelRegex = /\b(00[1-9]|[1-9]x)\b/i;
-                    const zeekrMatch = allTextGeneral.match(zeekrModelRegex);
-                    if (zeekrMatch) {
-                        modelo = zeekrMatch[0].toUpperCase();
-                    } else if (allTextGeneral.includes('ZEEKR')) {
-                        const xMatch = allTextGeneral.match(/\b(x)\b/i);
-                        if (xMatch) modelo = 'X';
-                    }
-
-                    if (!modelo) {
-                        for (let b in NICHES.CONCESSIONARIA.modelos) {
-                            if (allTextGeneral.includes(b)) {
-                                const foundModel = NICHES.CONCESSIONARIA.modelos[b].find(mod => {
-                                    const reg = new RegExp('\\b' + mod + '\\b', 'i');
-                                    return reg.test(allTextGeneral);
-                                });
-                                if (foundModel) {
-                                    modelo = foundModel;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-                const marca = activeNiche.marcas ? activeNiche.marcas.find(m => allTextGeneral.includes(m)) : null;
-
-                let vendeu = false;
-                if (currentNicheKey === 'CONCESSIONARIA') {
-                    vendeu = s.tagsName && Array.isArray(s.tagsName) &&
-                        s.tagsName.some(tag => {
-                            const tUpper = tag.toUpperCase();
-                            return tUpper.includes('TEST-DRIVE') || tUpper.includes('TEST DRIVE') || tUpper.includes('VISITA');
-                        });
-                } else {
-                    const vendeuPelasTags = s.tagsName && Array.isArray(s.tagsName) &&
-                        s.tagsName.some(tag => {
-                            const tagUpper = tag.toUpperCase();
-                            return TERMOS_CHAVE_VENDA.some(termo => tagUpper.includes(termo));
-                        });
-                    vendeu = vendeuPelasTags || !!s.venda;
-                }
-
-                const temNeg = activeNiche.negativos ? activeNiche.negativos.some(n => allTextClient.includes(n)) : false;
-                const score = calculateLeadScore(allTextClient, currentNicheKey);
-                
-                let qualificado = false;
-                let temperatura = null;
-
-                if (!temNeg) {
-                    if (score >= 6) {
-                        temperatura = 'QUENTE';
-                        qualificado = true;
-                    } else if (score >= 4) {
-                        temperatura = 'MORNO';
-                        qualificado = true;
-                    } else if (score >= 1) {
-                        temperatura = 'FRIO';
-                        qualificado = true;
-                    }
-                }
-
-                const temTagTestDriveOuVisita = s.tagsName && Array.isArray(s.tagsName) &&
-                    s.tagsName.some(tag => {
-                        const tUpper = tag.toUpperCase();
-                        return tUpper.includes('TEST-DRIVE') || tUpper.includes('TEST DRIVE') || tUpper.includes('VISITA');
-                    });
-
-                if (temTagTestDriveOuVisita) {
-                    qualificado = true;
-                    temperatura = 'QUENTE';
+                let statusFollow = 'AGUARDANDO_CLIENTE'; // No prazo
+                if (lastSender === 'CLIENTE') {
+                    statusFollow = 'AGUARDANDO_VENDEDOR'; // Urgente: bola com a empresa
+                } else if (lastSender === 'EMPRESA' && idleHours >= 24) {
+                    statusFollow = 'FOLLOW_UP_PENDENTE'; // Passou de 24h sem resposta do cliente: cobrar
                 }
 
                 if (leadsMap.has(leadId)) {
                     const existing = leadsMap.get(leadId);
-
                     if (sessionDate > existing.lastDate) {
                         existing.lastDate = sessionDate;
-                        existing.semResposta = (ultimoContatoDeQuem === "nosso");
+                        existing.lastSender = lastSender;
+                        existing.status = statusFollow;
+                        existing.idleHours = idleHours;
                         existing.sessionId = s.id;
                     }
-
-                    if (vendeu) existing.vendeu = true;
-                    if (qualificado) existing.qualificado = true;
-
-                    const tempWeights = { 'FRIO': 1, 'MORNO': 2, 'QUENTE': 3 };
-                    const currentWeight = tempWeights[existing.temperatura] || 0;
-                    const newWeight = tempWeights[temperatura] || 0;
-                    if (newWeight > currentWeight) {
-                        existing.temperatura = temperatura;
-                    }
-
-                    existing.msgTotal += totalMsgsCount;
-
-                    if (!existing.medida && medida) existing.medida = medida;
-                    if (!existing.modelo && modelo) existing.modelo = modelo;
-                    if (!existing.marca && marca) existing.marca = marca;
-
+                    existing.msgTotal += rawMsgs.length;
                 } else {
                     leadsMap.set(leadId, {
                         phoneId: leadId,
                         name: leadName,
                         lastDate: sessionDate,
-                        vendeu: vendeu,
-                        qualificado: qualificado,
-                        temperatura: temperatura,
-                        medida: medida,
-                        modelo: modelo,
-                        marca: marca,
-                        msgTotal: totalMsgsCount,
-                        semResposta: (ultimoContatoDeQuem === "nosso"),
-                        sessionId: s.id 
+                        lastSender: lastSender,
+                        status: statusFollow,
+                        idleHours: idleHours,
+                        msgTotal: rawMsgs.length,
+                        sessionId: s.id
                     });
                 }
             });
 
-            globalProcessedLeads = Array.from(leadsMap.values()).map(lead => {
-                if (lead.msgTotal >= 5 && (!lead.qualificado || lead.temperatura === 'FRIO')) {
-                    lead.qualificado = true;
-                    lead.temperatura = 'MORNO';
-                }
-                return lead;
-            }).sort((a, b) => b.lastDate - a.lastDate);
+            globalProcessedLeads = Array.from(leadsMap.values()).sort((a, b) => b.lastDate - a.lastDate);
 
             const stats = {
                 totalLeads: globalProcessedLeads.length,
-                vendas: globalProcessedLeads.filter(l => l.vendeu).length,
-                qualificados: globalProcessedLeads.filter(l => l.qualificado).length,
-                nQualificados: globalProcessedLeads.filter(l => !l.qualificado).length,
-                quentes: globalProcessedLeads.filter(l => l.qualificado && l.temperatura === 'QUENTE').length,
-                mornos: globalProcessedLeads.filter(l => l.qualificado && l.temperatura === 'MORNO').length,
-                frios: globalProcessedLeads.filter(l => l.qualificado && l.temperatura === 'FRIO').length
+                vendedor: globalProcessedLeads.filter(l => l.status === 'AGUARDANDO_VENDEDOR').length,
+                followAtrasado: globalProcessedLeads.filter(l => l.status === 'FOLLOW_UP_PENDENTE').length,
+                cliente: globalProcessedLeads.filter(l => l.status === 'AGUARDANDO_CLIENTE').length,
+                hoje: globalProcessedLeads.filter(l => l.idleHours < 24).length,
+                criticos: globalProcessedLeads.filter(l => l.idleHours >= 48).length
             };
 
             updateDashboard(stats);
         }
 
         function updateDashboard(stats) {
-            const subtitle = document.getElementById('dashboard-subtitle');
-            const chartVendasTitle = document.getElementById('chart-vendas-title');
-            const cardVendasTitle = document.getElementById('card-vendas-title');
-            const thStatusVenda = document.getElementById('th-status-venda');
-            const thInteresse = document.getElementById('th-interesse');
-
-            if (currentNicheKey === 'CONCESSIONARIA') {
-                if (subtitle) subtitle.innerText = "Métricas por Lead, Qualificação e Agendamentos/Visitas";
-                if (chartVendasTitle) chartVendasTitle.innerText = 'Conversão Test-Drive';
-                if (cardVendasTitle) cardVendasTitle.innerText = 'Interesse Test-Drive';
-                if (thStatusVenda) thStatusVenda.innerText = 'Test-Drive / Visita';
-                if (thInteresse) thInteresse.innerText = 'Interesse (Marca/Modelo)';
-            } else if (currentNicheKey === 'AUTO_SERVICE') {
-                if (subtitle) subtitle.innerText = "Métricas por Lead, Qualificação e Conversão de Serviços";
-                if (chartVendasTitle) chartVendasTitle.innerText = 'Conversão Serviços';
-                if (cardVendasTitle) cardVendasTitle.innerText = 'Serviços Fechados';
-                if (thStatusVenda) thStatusVenda.innerText = 'Status Serviço';
-                if (thInteresse) thInteresse.innerText = 'Interesse (Serviço/Peça)';
-            } else {
-                if (subtitle) subtitle.innerText = "Métricas por Lead, Qualificação e Conversão de Vendas";
-                if (chartVendasTitle) chartVendasTitle.innerText = 'Conversão Vendas';
-                if (cardVendasTitle) cardVendasTitle.innerText = 'Vendas Realizadas (Leads)';
-                if (thStatusVenda) thStatusVenda.innerText = 'Status Venda';
-                if (thInteresse) thInteresse.innerText = currentNicheKey === 'PNEUS' ? 'Interesse (Marca/Medida)' : 'Interesse (Marca/Produto)';
-            }
-
             document.getElementById('count-leads').innerText = stats.totalLeads;
-            document.getElementById('count-vendas').innerText = stats.vendas;
-            document.getElementById('count-qual-leads').innerText = stats.qualificados;
-            document.getElementById('count-quente-leads').innerText = stats.quentes;
-            document.getElementById('count-morno-leads').innerText = stats.mornos;
-            document.getElementById('count-frio-leads').innerText = stats.frios;
+            document.getElementById('count-vendedor').innerText = stats.vendedor;
+            document.getElementById('count-follow-atrasado').innerText = stats.followAtrasado;
+            document.getElementById('count-cliente').innerText = stats.cliente;
+            document.getElementById('count-hoje').innerText = stats.hoje;
+            document.getElementById('count-criticos').innerText = stats.criticos;
 
-            document.getElementById('pizza-vendas-val').innerText = Math.round((stats.vendas / stats.totalLeads * 100) || 0) + '%';
-            document.getElementById('pizza-qual-val').innerText = stats.qualificados;
-            document.getElementById('pizza-quente-val').innerText = stats.quentes;
+            document.getElementById('pizza-pendente-val').innerText = stats.vendedor;
+            document.getElementById('pizza-bola-val').innerText = (stats.vendedor + stats.followAtrasado);
+            document.getElementById('pizza-tempo-val').innerText = stats.criticos;
 
             initCharts(stats);
             currentFilteredLeads = globalProcessedLeads;
@@ -1178,61 +701,6 @@
 
             document.getElementById('loading').style.display = 'none';
             document.getElementById('dashboard').style.display = 'block';
-        }
-
-        function changePage(delta) {
-            currentPage += delta;
-            renderTable();
-        }
-
-        function togglePieFilter(label) {
-            document.querySelectorAll('.stat-card').forEach(c => c.classList.remove('active-filter-card'));
-            document.querySelectorAll('.big-num').forEach(n => n.classList.remove('active-filter-num'));
-
-            let normalizedLabel = label;
-            if (label === 'Test-Drive' || label === 'Serviço Fechado') normalizedLabel = 'Vendeu';
-            if (label === 'Sem Test-Drive' || label === 'Não Fechou') normalizedLabel = 'Não Vendeu';
-
-            if (activePieFilter === normalizedLabel) {
-                activePieFilter = null;
-            } else {
-                activePieFilter = normalizedLabel;
-            }
-
-            if (activePieFilter) {
-                if (activePieFilter === 'Vendeu') {
-                    document.getElementById('count-vendas')?.closest('.stat-card')?.classList.add('active-filter-card');
-                    document.getElementById('pizza-vendas-val')?.classList.add('active-filter-num');
-                } else if (activePieFilter === 'Qualificado') {
-                    document.getElementById('count-qual-leads')?.closest('.stat-card')?.classList.add('active-filter-card');
-                    document.getElementById('pizza-qual-val')?.classList.add('active-filter-num');
-                } else if (activePieFilter === 'Quente') {
-                    document.getElementById('count-quente-leads')?.closest('.stat-card')?.classList.add('active-filter-card');
-                    document.getElementById('pizza-quente-val')?.classList.add('active-filter-num');
-                } else if (activePieFilter === 'Morno') {
-                    document.getElementById('count-morno-leads')?.closest('.stat-card')?.classList.add('active-filter-card');
-                } else if (activePieFilter === 'Frio') {
-                    document.getElementById('count-frio-leads')?.closest('.stat-card')?.classList.add('active-filter-card');
-                }
-
-                currentFilteredLeads = globalProcessedLeads.filter(lead => {
-                    switch (activePieFilter) {
-                        case 'Vendeu': return lead.vendeu;
-                        case 'Não Vendeu': return !lead.vendeu;
-                        case 'Qualificado': return lead.qualificado;
-                        case 'Desqualificado': return !lead.qualificado;
-                        case 'Quente': return lead.qualificado && lead.temperatura === 'QUENTE';
-                        case 'Morno': return lead.qualificado && lead.temperatura === 'MORNO';
-                        case 'Frio': return lead.qualificado && lead.temperatura === 'FRIO';
-                        default: return true;
-                    }
-                });
-            } else {
-                currentFilteredLeads = globalProcessedLeads;
-            }
-
-            currentPage = 1;
-            renderTable();
         }
 
         function initCharts(stats) {
@@ -1249,49 +717,76 @@
                 }
             };
 
-            if (chartVendas) chartVendas.destroy();
-            let labelVendas = 'Vendeu';
-            let labelNaoVendas = 'Não Vendeu';
-            if (currentNicheKey === 'CONCESSIONARIA') {
-                labelVendas = 'Test-Drive';
-                labelNaoVendas = 'Sem Test-Drive';
-            } else if (currentNicheKey === 'AUTO_SERVICE') {
-                labelVendas = 'Serviço Fechado';
-                labelNaoVendas = 'Não Fechou';
-            }
-
-            chartVendas = new Chart(document.getElementById('chartVendas'), {
+            if (chartStatus) chartStatus.destroy();
+            chartStatus = new Chart(document.getElementById('chartStatus'), {
                 type: 'doughnut',
                 data: {
-                    labels: [labelVendas, labelNaoVendas],
+                    labels: ['Aguardando Vendedor', 'Follow-up Pendente', 'Aguardando Cliente'],
                     datasets: [{
-                        data: [stats.vendas, stats.totalLeads - stats.vendas],
-                        backgroundColor: ['#7b1fa2', '#eeeeee'],
+                        data: [stats.vendedor, stats.followAtrasado, stats.cliente],
+                        backgroundColor: ['#d32f2f', '#f57c00', '#1e3c72'],
                         borderWidth: 0
                     }]
                 },
                 options: { ...commonOptions, cutout: '70%' }
             });
 
-            if (mainChart) mainChart.destroy();
-            mainChart = new Chart(document.getElementById('chartMain'), {
+            if (chartResponsabilidade) chartResponsabilidade.destroy();
+            chartResponsabilidade = new Chart(document.getElementById('chartResponsabilidade'), {
                 type: 'pie',
                 data: {
-                    labels: ['Qualificado', 'Desqualificado'],
-                    datasets: [{ data: [stats.qualificados, stats.nQualificados], backgroundColor: ['#2e7d32', '#cfd8dc'] }]
+                    labels: ['Com a Empresa', 'Com o Cliente'],
+                    datasets: [{
+                        data: [stats.vendedor + stats.followAtrasado, stats.cliente],
+                        backgroundColor: ['#7b1fa2', '#cfd8dc']
+                    }]
                 },
                 options: commonOptions
             });
 
-            if (subChart) subChart.destroy();
-            subChart = new Chart(document.getElementById('chartSub'), {
+            const tMenor24 = globalProcessedLeads.filter(l => l.idleHours < 24).length;
+            const t24a48 = globalProcessedLeads.filter(l => l.idleHours >= 24 && l.idleHours < 48).length;
+            const tMaior48 = stats.criticos;
+
+            if (chartTempo) chartTempo.destroy();
+            chartTempo = new Chart(document.getElementById('chartTempo'), {
                 type: 'pie',
                 data: {
-                    labels: ['Quente', 'Morno', 'Frio'],
-                    datasets: [{ data: [stats.quentes, stats.mornos, stats.frios], backgroundColor: ['#d32f2f', '#ffa726', '#1e3c72'] }]
+                    labels: ['< 24h', '24h - 48h', '> 48h'],
+                    datasets: [{
+                        data: [tMenor24, t24a48, tMaior48],
+                        backgroundColor: ['#2e7d32', '#ffa726', '#c62828']
+                    }]
                 },
                 options: commonOptions
             });
+        }
+
+        function togglePieFilter(label) {
+            document.querySelectorAll('.stat-card').forEach(c => c.classList.remove('active-filter-card'));
+            document.querySelectorAll('.big-num').forEach(n => n.classList.remove('active-filter-num'));
+
+            if (activePieFilter === label) {
+                activePieFilter = null;
+                currentFilteredLeads = globalProcessedLeads;
+            } else {
+                activePieFilter = label;
+                currentFilteredLeads = globalProcessedLeads.filter(lead => {
+                    switch (label) {
+                        case 'Aguardando Vendedor': return lead.status === 'AGUARDANDO_VENDEDOR';
+                        case 'Follow-up Pendente': return lead.status === 'FOLLOW_UP_PENDENTE';
+                        case 'Aguardando Cliente': return lead.status === 'AGUARDANDO_CLIENTE';
+                        case 'Com a Empresa': return lead.status === 'AGUARDANDO_VENDEDOR' || lead.status === 'FOLLOW_UP_PENDENTE';
+                        case 'Com o Cliente': return lead.status === 'AGUARDANDO_CLIENTE';
+                        case '< 24h': return lead.idleHours < 24;
+                        case '24h - 48h': return lead.idleHours >= 24 && lead.idleHours < 48;
+                        case '> 48h': return lead.idleHours >= 48;
+                        default: return true;
+                    }
+                });
+            }
+            currentPage = 1;
+            renderTable();
         }
 
         function renderTable() {
@@ -1308,48 +803,25 @@
             const body = document.getElementById('table-body');
 
             body.innerHTML = paginatedData.map(lead => {
-                let vendaBadge = `<span style="color:#ccc; font-size:0.8rem">--</span>`;
-                if (lead.vendeu) {
-                    if (currentNicheKey === 'CONCESSIONARIA') {
-                        vendaBadge = `<span class="badge badge-venda"><i class="fas fa-car"></i> TEST-DRIVE</span>`;
-                    } else if (currentNicheKey === 'AUTO_SERVICE') {
-                        vendaBadge = `<span class="badge badge-venda"><i class="fas fa-wrench"></i> SERVIÇO</span>`;
-                    } else {
-                        vendaBadge = `<span class="badge badge-venda"><i class="fas fa-check"></i> VENDA</span>`;
-                    }
-                }
-
-                const qualBadge = lead.qualificado ?
-                    `<span class="badge badge-qualificado">Sim</span>` :
-                    `<span class="badge badge-n-qualificado">Não</span>`;
-
-                let tempHtml = '-';
-                if (lead.qualificado) {
-                    if (lead.temperatura === 'QUENTE') {
-                        tempHtml = `<span class="temp-quente">Quente 🔥</span>`;
-                    } else if (lead.temperatura === 'MORNO') {
-                        tempHtml = `<span class="temp-morno">Morno ❄️</span>`;
-                    } else if (lead.temperatura === 'FRIO') {
-                        tempHtml = `<span class="temp-frio">Frio 🧊</span>`;
-                    }
-                }
-                
-                // Exibe de forma limpa e profissional a falta de resposta se o último gatilho foi do bot/API
-                if (lead.semResposta) {
-                    tempHtml += `<br><small style="color:#e65100; font-weight:600;"><i class="fas fa-reply"></i> Sem Resposta</small>`;
-                }
-
-                let interesse = [];
-                if (lead.marca) interesse.push(`<b>${lead.marca}</b>`);
-                if (currentNicheKey === 'CONCESSIONARIA') {
-                    if (lead.modelo) interesse.push(`<span class="medida-tag">${lead.modelo}</span>`);
+                let statusBadge = '';
+                if (lead.status === 'AGUARDANDO_VENDEDOR') {
+                    statusBadge = `<span class="badge badge-urgente"><i class="fas fa-exclamation-circle"></i> RESPONDER</span>`;
+                } else if (lead.status === 'FOLLOW_UP_PENDENTE') {
+                    statusBadge = `<span class="badge badge-pendente"><i class="fas fa-hourglass-half"></i> COBRAR LEAD</span>`;
                 } else {
-                    if (lead.medida) interesse.push(`<span class="medida-tag">${lead.medida}</span>`);
+                    statusBadge = `<span class="badge badge-noprazo"><i class="fas fa-check"></i> EM DIA</span>`;
                 }
-                const interesseHtml = interesse.length > 0 ? interesse.join(' ') : '<span style="color:#ccc">Genérico</span>';
+
+                let tempoOciosoStr = '';
+                if (lead.idleHours === 0) {
+                    tempoOciosoStr = 'Agora mesmo';
+                } else if (lead.idleHours < 24) {
+                    tempoOciosoStr = `${lead.idleHours} hora(s)`;
+                } else {
+                    tempoOciosoStr = `${Math.floor(lead.idleHours / 24)} dia(s)`;
+                }
 
                 let phoneDisplay = lead.phoneId.split('@')[0];
-                if (phoneDisplay.length > 15 && phoneDisplay.includes('-')) phoneDisplay = "Sem Telefone";
 
                 return `
                 <tr>
@@ -1358,10 +830,9 @@
                         <div style="font-weight:bold; color:#333;">${lead.name}</div>
                         <small style="color:#999;">${phoneDisplay}</small>
                     </td>
-                    <td style="text-align:center">${vendaBadge}</td>
-                    <td>${qualBadge}</td>
-                    <td>${tempHtml}</td>
-                    <td>${interesseHtml}</td>
+                    <td style="text-align:center">${statusBadge}</td>
+                    <td><b>${lead.lastSender}</b></td>
+                    <td><span class="medida-tag">${tempoOciosoStr}</span></td>
                     <td style="text-align:center">${lead.msgTotal}</td>
                     <td><a href="https://muvecom.wts.chat/chat2/sessions/${lead.sessionId}" target="_blank" class="btn-action">Ver Chat</a></td>
                 </tr>
@@ -1375,6 +846,11 @@
             `;
         }
 
+        function changePage(delta) {
+            currentPage += delta;
+            renderTable();
+        }
+
         function resetFilter() {
             activePieFilter = null;
             document.querySelectorAll('.stat-card').forEach(c => c.classList.remove('active-filter-card'));
@@ -1385,5 +861,4 @@
         }
     </script>
 </body>
-
 </html>
