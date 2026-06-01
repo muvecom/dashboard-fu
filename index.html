@@ -1,3 +1,543 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Monitoramento de Follow-ups</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* ESTILO GERAL E RESET */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* HEADER */
+        header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .date-filter {
+            padding: 9px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        .date-filter::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            cursor: pointer;
+        }
+
+        .header-info h1 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+
+        .header-info p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .btn-refresh {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-weight: 600;
+        }
+
+        .btn-refresh:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* SEÇÃO DE GRÁFICOS */
+        .charts-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .chart-box {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 250px;
+        }
+
+        .chart-header {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .chart-header h4 {
+            font-size: 0.85rem;
+            color: #666;
+            text-transform: uppercase;
+        }
+
+        .chart-header .big-num {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #1e3c72;
+            line-height: 1;
+            cursor: pointer;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .chart-header .big-num:hover {
+            transform: scale(1.08);
+        }
+
+        .active-filter-num {
+            text-decoration: underline;
+            text-underline-offset: 4px;
+        }
+
+        .chart-canvas-wrapper {
+            width: 100%;
+            height: 180px;
+            display: flex;
+            justify-content: center;
+            position: relative;
+        }
+
+        /* CARDS DE ESTATÍSTICA */
+        .section-title {
+            margin: 20px 0 10px;
+            font-size: 1.1rem;
+            color: #444;
+            font-weight: 700;
+            border-left: 4px solid #1e3c72;
+            padding-left: 10px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            border-left: 4px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .stat-card:hover {
+            background-color: #fafafa;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .active-filter-card {
+            background-color: #eef2f9 !important;
+            border-bottom: 4px solid #2a5298 !important;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+        }
+
+        .stat-card h3 {
+            font-size: 0.75rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #333;
+        }
+
+        /* Cores Cards */
+        .border-blue { border-color: #1e3c72; }
+        .border-green { border-color: #2e7d32; }
+        .border-red { border-color: #d32f2f; }
+        .border-orange { border-color: #f57c00; }
+        .border-purple { border-color: #7b1fa2; }
+
+        .text-green { color: #2e7d32; }
+        .text-red { color: #d32f2f; }
+        .text-purple { color: #7b1fa2; }
+        .text-orange { color: #f57c00; }
+        .text-blue { color: #1e3c72; }
+
+        /* TABELA DE DADOS */
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        th {
+            padding: 15px 15px;
+            text-align: left;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #495057;
+            text-transform: uppercase;
+        }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #f1f3f5;
+            font-size: 0.85rem;
+            vertical-align: middle;
+        }
+
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            display: inline-block;
+        }
+
+        .badge-urgente {
+            background-color: #ffebee;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
+        }
+
+        .badge-pendente {
+            background-color: #fff3e0;
+            color: #e65100;
+            border: 1px solid #ffe0b2;
+        }
+
+        .badge-noprazo {
+            background-color: #e3f2fd;
+            color: #0d47a1;
+            border: 1px solid #bbdefb;
+        }
+
+        .medida-tag {
+            background: #f1f3f4;
+            color: #333;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.85rem;
+        }
+
+        .btn-action {
+            text-decoration: none;
+            color: white;
+            background-color: #2a5298;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            transition: 0.2s;
+            display: inline-block;
+        }
+
+        .btn-action:hover {
+            opacity: 0.9;
+        }
+
+        .loading-container {
+            text-align: center;
+            padding: 60px;
+            display: none;
+        }
+
+        .fa-spin {
+            font-size: 3rem;
+            color: #2a5298;
+            margin-bottom: 20px;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: 0.3s;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: white;
+            width: 90%;
+            max-width: 450px;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal h2 {
+            margin-bottom: 15px;
+            color: #1e3c72;
+        }
+
+        .modal input {
+            width: 100%;
+            padding: 12px;
+            margin: 20px 0;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: #2a5298;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            width: 100%;
+            transition: 0.2s;
+        }
+
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+            padding: 10px;
+        }
+
+        .pagination-btn {
+            padding: 6px 12px;
+            border: 1px solid #ddd;
+            background: white;
+            cursor: pointer;
+            border-radius: 4px;
+            color: #1e3c72;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            background: #f1f3f4;
+        }
+
+        .pagination-btn:disabled {
+            color: #ccc;
+            cursor: not-allowed;
+            border-color: #eee;
+        }
+
+        .pagination-info {
+            font-size: 14px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="modal-overlay" id="tokenModal">
+        <div class="modal">
+            <i class="fas fa-shield-alt fa-3x" style="color: #2a5298; margin-bottom: 15px;"></i>
+            <h2>Acesso Restrito</h2>
+            <input type="password" id="tokenInput" placeholder="Cole seu token aqui...">
+            <button class="btn-primary" onclick="saveTokenAndLoad()">Acessar Dashboard</button>
+            <a href="https://muvecom.wts.chat/integration/token" target="_blank"
+                style="display: block; margin-top: 15px; font-size: 0.9rem; color: #2a5298; text-decoration: none;">Esqueceu o token?</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <header>
+            <div class="header-info">
+                <h1 id="dashboard-title"><i class="fas fa-clock"></i> Monitor de Follow-ups</h1>
+                <p id="dashboard-subtitle">Controle de SLAs, tempo ocioso e pendências de resposta por Lead</p>
+            </div>
+            <div class="header-actions">
+                <input type="date" id="startDate" class="date-filter" title="Data Início">
+                <input type="date" id="endDate" class="date-filter" title="Data Fim">
+                <button class="btn-refresh" onclick="loadData()"><i class="fas fa-sync-alt"></i> Atualizar</button>
+            </div>
+        </header>
+
+        <div id="loading" class="loading-container">
+            <i class="fas fa-circle-notch fa-spin"></i>
+            <h3>Analisando interações e calculando ociosidade...</h3>
+        </div>
+
+        <div id="dashboard" style="display: none;">
+
+            <div class="charts-row">
+                <div class="chart-box">
+                    <div class="chart-header">
+                        <div>
+                            <h4>Status do Follow-up</h4>
+                            <span style="font-size:0.8rem; color:#999">Atraso global da base</span>
+                        </div>
+                        <div class="big-num text-red" id="pizza-pendente-val" onclick="togglePieFilter('Aguardando Vendedor')">0</div>
+                    </div>
+                    <div class="chart-canvas-wrapper">
+                        <canvas id="chartStatus"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-box">
+                    <div class="chart-header">
+                        <div>
+                            <h4>Com quem está a bola?</h4>
+                            <span style="font-size:0.8rem; color:#999">Distribuição de ação</span>
+                        </div>
+                        <div class="big-num text-purple" id="pizza-bola-val" onclick="togglePieFilter('Com a Empresa')">0</div>
+                    </div>
+                    <div class="chart-canvas-wrapper">
+                        <canvas id="chartResponsabilidade"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-box">
+                    <div class="chart-header">
+                        <div>
+                            <h4>Tempo de Inatividade</h4>
+                            <span style="font-size:0.8rem; color:#999">Idade do último contato</span>
+                        </div>
+                        <div class="big-num text-orange" id="pizza-tempo-val" onclick="togglePieFilter('> 48h')">0</div>
+                    </div>
+                    <div class="chart-canvas-wrapper">
+                        <canvas id="chartTempo"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-title">Métricas de Resposta (Filtros Rápidos)</div>
+            <div class="stats-grid">
+                <div class="stat-card border-blue" onclick="resetFilter()">
+                    <h3>Total Atendimentos</h3>
+                    <div class="stat-value" id="count-leads">0</div>
+                </div>
+                <div class="stat-card border-red" onclick="togglePieFilter('Aguardando Vendedor')">
+                    <h3>Aguardando Vendedor</h3>
+                    <div class="stat-value text-red" id="count-vendedor">0</div>
+                </div>
+                <div class="stat-card border-orange" onclick="togglePieFilter('Follow-up Pendente')">
+                    <h3>Follow-up Atrasado</h3>
+                    <div class="stat-value text-orange" id="count-follow-atrasado">0</div>
+                </div>
+                <div class="stat-card border-green" onclick="togglePieFilter('Aguardando Cliente')">
+                    <h3>Aguardando Cliente</h3>
+                    <div class="stat-value text-green" id="count-cliente">0</div>
+                </div>
+                <div class="stat-card border-blue" onclick="togglePieFilter('< 24h')">
+                    <h3>Ativos Hoje (&lt;24h)</h3>
+                    <div class="stat-value text-blue" id="count-hoje">0</div>
+                </div>
+                <div class="stat-card border-purple" onclick="togglePieFilter('> 48h')">
+                    <h3>Críticos (&gt;48h)</h3>
+                    <div class="stat-value text-purple" id="count-criticos">0</div>
+                </div>
+            </div>
+
+            <div class="section-title">Detalhamento Fila de Acompanhamento</div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Última Interação</th>
+                            <th>Lead (Telefone)</th>
+                            <th style="text-align:center">Status Fila</th>
+                            <th>Último Remetente</th>
+                            <th>Tempo Sem Resposta</th>
+                            <th>Total Msgs</th>
+                            <th>Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body"></tbody>
+                </table>
+            </div>
+            <div id="pagination-controls" class="pagination-container"></div>
+        </div>
+    </div>
+
     <script>
         const WEBHOOK_URL = 'https://evo.muvecom.com.br/webhook/de8b08a0-e58e-4f02-b34c-218a682f9924';
         
@@ -320,3 +860,5 @@
             renderTable();
         }
     </script>
+</body>
+</html>
